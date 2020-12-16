@@ -9,23 +9,41 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Player {
 
 	SpriteBatch batch;
-	static Sprite ship = new Sprite(new Texture("ship.png"));
+	static Texture tShip;
+	static Sprite ship;
+	static Sprite[] clones = new Sprite[8];
 	static boolean rightPressed, leftPressed, upPressed, downPressed;
 	static float x, y, vx, vy, rot, delta;
 
 	static final float ACCEL = 2.4f;
 	static final float RSPEED = 3;
+	static final float S_WIDTH = Const.S_WIDTH.get();
+	static final float S_HEIGHT = Const.S_HEIGHT.get();
 
 	Player(SpriteBatch batch) {
+		tShip = new Texture("ship.png");
+		ship = new Sprite(tShip);
+
+		for (int i = 0; i < 8; i++) {
+			clones[i] = new Sprite(tShip);
+		}
+		
+		for(Sprite s : clones) {
+			s.setScale(1.5f);
+		}
+
 		this.batch = batch;
 		ship.setScale(1.5f);
-		x = Const.S_WIDTH.get() / 2;
-		y = Const.S_HEIGHT.get() / 2;
+		x = S_WIDTH / 2;
+		y = S_HEIGHT / 2;
 	}
 
 	/** Just tells the sprite batch to draw the ship */
 	public void render() {
 		ship.draw(batch);
+		for(Sprite s : clones) {
+			s.draw(batch);
+		}
 	}
 
 	/** Checks if certain keys are being held down */
@@ -40,6 +58,7 @@ public class Player {
 	public void moveShip() {
 		delta = Gdx.graphics.getDeltaTime();
 
+		// Check movement keys
 		if (rightPressed) {
 			rot = (rot - RSPEED) % 360;
 			ship.setRotation(rot);
@@ -56,6 +75,7 @@ public class Player {
 			vx -= vx / 100;
 		}
 
+		// Prevent velocity from getting infinitely smaller
 		vx = (float) (Math.floor(vx * 10000) / 10000);
 		vy = (float) (Math.floor(vy * 10000) / 10000);
 
@@ -65,29 +85,55 @@ public class Player {
 			vx = 0;
 		}
 
+		// Increment position by velocity multiplied by the time since
+		// last frame, for consistent movement
 		x += vx * delta;
 		y += vy * delta;
 
-		if (x <= -ship.getWidth()) {
-			x = Const.S_WIDTH.get() + ship.getWidth();
-		} else if (x >= Const.S_WIDTH.get() + ship.getWidth()) {
-			x = -ship.getWidth();
+		if (x <= 0) {
+			x = S_WIDTH;
+		} else if (x >= S_WIDTH) {
+			x = 0;
 		}
 
-		if (y <= -ship.getWidth()) {
-			y = Const.S_HEIGHT.get() + ship.getHeight();
-		} else if (y >= Const.S_HEIGHT.get() + ship.getHeight()) {
-			y = -ship.getHeight();
+		if (y <= 0) {
+			y = S_HEIGHT;
+		} else if (y >= S_HEIGHT) {
+			y = 0;
 		}
 
-		ship.setX(x - ship.getWidth());
-		ship.setY(y - ship.getHeight());
+		for (Sprite s : clones) {
+			s.setRotation(rot);
+		}
+
+		clones[0].setPosition(centerX(x) - S_WIDTH, centerY(y) - S_HEIGHT); // Top right
+		clones[1].setPosition(centerX(x), centerY(y) - S_HEIGHT);           // Top middle
+		clones[2].setPosition(centerX(x) + S_WIDTH, centerY(y) - S_HEIGHT); // Top left
+		clones[3].setPosition(centerX(x) - S_WIDTH, centerY(y));            // Middle right
+		clones[4].setPosition(centerX(x) + S_WIDTH, centerY(y));            // Middle left
+		clones[5].setPosition(centerX(x) - S_WIDTH, centerY(y) + S_HEIGHT); // Bottom right
+		clones[6].setPosition(centerX(x), centerY(y) + S_HEIGHT);           // Bottom middle
+		clones[7].setPosition(centerX(x) + S_WIDTH, centerY(y) + S_HEIGHT); // Bottom left
+
+		// Set sprite location
+		ship.setPosition(centerX(x), centerY(y));
+	}
+
+	float centerX(float x) {
+		return x - ship.getWidth() / 2;
+	}
+	
+	float centerY(float y) {
+		return y - ship.getHeight() / 2;
 	}
 
 	/** Verbose info */
 	public String toString() {
-		return "Velocity: (" + vx + ", " + vy + ")" + "\n" +
-				"Position: (" + x + ", " + y + ")" + "\n" +
-				Gdx.graphics.getWidth() + ", " + Gdx.graphics.getHeight();
+		return "Velocity: (" + vx + ", " + vy + ")" + "\n" + "Position: (" + x + ", " + y + ")" + "\n"
+				+ Gdx.graphics.getWidth() + ", " + Gdx.graphics.getHeight();
+	}
+
+	public void dispose() {
+		tShip.dispose();
 	}
 }

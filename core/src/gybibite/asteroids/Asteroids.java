@@ -25,7 +25,7 @@ public class Asteroids extends ApplicationAdapter {
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		Gdx.graphics.setWindowedMode(800, 600); // Doesn't set window size, just scales :(
+		Gdx.graphics.setWindowedMode(800, 600); // Doesn't set window res, just scales :(
 		pl = new Player(batch); // Creates a new player (ship), while passing the sprite batch so it can render
 	}
 
@@ -48,5 +48,6 @@ public class Asteroids extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		batch.dispose();
+		pl.dispose();
 	}
 }

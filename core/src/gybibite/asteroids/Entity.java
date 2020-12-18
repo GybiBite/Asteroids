@@ -1,23 +1,29 @@
 package gybibite.asteroids;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
 	SpriteBatch batch;
 	Texture tex;
 	Sprite sprite;
+	/** Clones for screen wrapping */
 	Sprite[] clones = new Sprite[8];
-	protected static final int S_WIDTH = Asteroids.S_WIDTH;
-	protected static final int S_HEIGHT = Asteroids.S_HEIGHT;
-	static float x, y, vx, vy, rot, delta;
+	/** Polygon object for controlling the hitbox */
+	Polygon hitbox;
+	/** Constants for window size */
+	protected static final int S_WIDTH = Asteroids.S_WIDTH, S_HEIGHT = Asteroids.S_HEIGHT;
+	/** Positional variables */
+	float x, y, vx, vy, rot, delta;
 
 	Entity(SpriteBatch batch, float scale, Texture tex) {
 		this.batch = batch;
 		this.tex = tex;
 		sprite = new Sprite(tex);
-		
+
 		// Set all "clones" to the same texture
 		for (int i = 0; i < 8; i++) {
 			clones[i] = new Sprite(tex);
@@ -28,6 +34,9 @@ public abstract class Entity {
 		for (Sprite s : clones) {
 			s.setScale(scale);
 		}
+
+		// Keep track of this entity in the entity list
+		Asteroids.addEntity(this);
 	}
 
 	/**
@@ -46,6 +55,11 @@ public abstract class Entity {
 		return y - sprite.getHeight() / 2;
 	}
 
+	/** Get the entity's velocity, in array format */
+	float[] getV() {
+		return new float[] { vx, vy };
+	}
+
 	/** Positions "clones" to emulate screen texture wrapping */
 	void posClones() {
 		clones[0].setPosition(centerX(x) - S_WIDTH, centerY(y) - S_HEIGHT); // Top right
@@ -60,9 +74,11 @@ public abstract class Entity {
 
 	/** Just tells the sprite batch to draw the ship */
 	public void render() {
-		posClones();
+		delta = Gdx.graphics.getDeltaTime();
 		// Set sprite location
 		sprite.setPosition(centerX(x), centerY(y));
+		posClones();
+		// Tell the sprite batch to draw
 		sprite.draw(batch);
 		for (Sprite s : clones) {
 			s.setRotation(rot);
@@ -75,6 +91,23 @@ public abstract class Entity {
 		tex.dispose();
 	}
 
+	/** Remove the entity when necessary */
+	public void kill() {
+		Asteroids.destroyEntity(this);
+		dispose();
+	}
+
 	/** In each subclass, will be used to determine how the entity moves */
-	abstract void moveEntity();
+	abstract void tick();
+	
+	/** In each subclass, will be used to set the vertices of the hitbox */
+	abstract void setHitbox();
+
+	/** Some verbose stuff */
+	public String toString() {
+		return "-----------------"
+				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + Asteroids.entities.indexOf(this, false)
+				+ "\n" + "Velocity: (" + vx + ", " + vy + ")"
+				+ "\n" + "Position: (" + x + ", " + y + ")";
+	}
 }

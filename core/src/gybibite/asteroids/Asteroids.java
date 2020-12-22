@@ -1,16 +1,21 @@
 package gybibite.asteroids;
 
+import java.util.Random;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 
 public class Asteroids extends ApplicationAdapter {
-	SpriteBatch batch;
+	static SpriteBatch batch;
+	static ShapeRenderer s;
 	static Array<Entity> entities = new Array<Entity>();
 
 	boolean verbose = false;
+	Random rand = new Random();
 
 	public static final int S_WIDTH = 640, S_HEIGHT = 480;
 
@@ -26,8 +31,9 @@ public class Asteroids extends ApplicationAdapter {
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
+		s = new ShapeRenderer();
 		Gdx.graphics.setWindowedMode(800, 600); // Doesn't set window res, just scales :(
-		new EntityPlayer(batch, 1.5f); // Creates a new player (ship), while passing the sprite batch so it can render
+		new EntityPlayer(1.5f); // Creates a new player (ship), while passing the sprite batch so it can render
 	}
 
 	@Override
@@ -39,15 +45,18 @@ public class Asteroids extends ApplicationAdapter {
 		batch.begin();
 		for (Entity e : entities) {
 			e.tick();
-			e.render();
+			e.render(batch);
 		}
 		batch.end();
 
 		if (verbose) {
 			for (Entity e : entities) {
 				System.out.println(e);
+//				e.drawHB();
 			}
+			System.out.println("===== END OF FRAME =====");
 		}
+		
 	}
 
 	@Override

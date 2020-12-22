@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 
 public class EntityPlayer extends Entity {
@@ -16,20 +15,13 @@ public class EntityPlayer extends Entity {
 	/** How fast does the ship rotate (degrees per tick button held down) */
 	static final float RSPEED = 3f;
 	static final float MAX_SPEED = 175f;
-	
-	static final float[] hb = new float[8];
 
-	EntityPlayer(SpriteBatch batch, float scale) {
-		super(batch, scale, new Texture("ship.png"));
+	EntityPlayer(float scale) {
+		super(scale, 0, new Texture("ship.png"));
 
 		x = S_WIDTH / 2;
 		y = S_HEIGHT / 2;
-		
-		hb[0] = 2; //TODO: I'll do this later.
-		hb[0] = 2;
-		
-		new Polygon(hb);
-		
+
 		setHitbox();
 	}
 
@@ -66,9 +58,9 @@ public class EntityPlayer extends Entity {
 			vy -= vy / DECEL;
 			vx -= vx / DECEL;
 		}
-		
+
 		if (firePressed) {
-			new EntityBullet(batch, 2f, this, x, y);
+			new EntityBullet(2f, this);
 		}
 
 		// Prevent velocity from getting infinitely smaller
@@ -97,10 +89,18 @@ public class EntityPlayer extends Entity {
 		} else if (y >= S_HEIGHT) {
 			y = 0;
 		}
+
+		hitbox.setRotation(rot);
+		hitbox.setPosition(x, y);
 	}
 
 	@Override
 	void setHitbox() {
-		hitbox = new Polygon();
+		hb = new float[] { 0, sprite.getHeight() / 1.3f,
+				sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f,
+				0, -sprite.getHeight() / 1.3f,
+				-sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f };
+
+		hitbox = new Polygon(hb);
 	}
 }

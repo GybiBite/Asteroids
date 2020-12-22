@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
-	SpriteBatch batch;
+	/** An ID for checking entity types */
+	int id;
 	Texture tex;
 	Sprite sprite;
 	/** Clones for screen wrapping */
@@ -18,9 +20,18 @@ public abstract class Entity {
 	protected static final int S_WIDTH = Asteroids.S_WIDTH, S_HEIGHT = Asteroids.S_HEIGHT;
 	/** Positional variables */
 	float x, y, vx, vy, rot, delta;
+	/** Hitbox definition */
+	float[] hb;
 
-	Entity(SpriteBatch batch, float scale, Texture tex) {
-		this.batch = batch;
+	/**
+	 * The primary constructor for creating a new entity
+	 * @param scale How to scale the texture for the entity
+	 * @param id What ID to set (0: Player | 1: Bullet | 2: Asteroid | 3: UFO)
+	 * @param tex The texture to use (assets directory)
+	 */
+	Entity(float scale, int id, Texture tex) {
+		this.id = id;
+		
 		this.tex = tex;
 		sprite = new Sprite(tex);
 
@@ -42,6 +53,7 @@ public abstract class Entity {
 	/**
 	 * Returns the center of the sprite's X position, since libGDX won't draw the
 	 * sprite centered on the coordinate
+	 * @param x X Position
 	 */
 	float centerX(float x) {
 		return x - sprite.getWidth() / 2;
@@ -50,6 +62,7 @@ public abstract class Entity {
 	/**
 	 * Returns the center of the sprite's Y position, since libGDX won't draw the
 	 * sprite centered on the coordinate
+	 * @param y Y Position
 	 */
 	float centerY(float y) {
 		return y - sprite.getHeight() / 2;
@@ -72,8 +85,11 @@ public abstract class Entity {
 		clones[7].setPosition(centerX(x) + S_WIDTH, centerY(y) + S_HEIGHT); // Bottom left
 	}
 
-	/** Just tells the sprite batch to draw the ship */
-	public void render() {
+	/**
+	 * Just tells the sprite batch to draw the ship
+	 * @param batch The sprite batch to be passed to the draw command
+	 */
+	public void render(SpriteBatch batch) {
 		delta = Gdx.graphics.getDeltaTime();
 		// Set sprite location
 		sprite.setPosition(centerX(x), centerY(y));
@@ -86,22 +102,33 @@ public abstract class Entity {
 		}
 	}
 
-	/** Necessary for libGDX memory management */
+	/**
+	 * Disposes of any "Disposable" objects 
+	 * @see com.badlogic.gdx.utils#Disposable
+	 */
 	public void dispose() {
 		tex.dispose();
 	}
 
-	/** Remove the entity when necessary */
+	/** Removes the entity when necessary */
 	public void kill() {
 		Asteroids.destroyEntity(this);
 		dispose();
 	}
 
-	/** In each subclass, will be used to determine how the entity moves */
+	/** Defines how the entity interacts with the world every server cycle */
 	abstract void tick();
 	
-	/** In each subclass, will be used to set the vertices of the hitbox */
+	/** Defines the hitbox vertices */
 	abstract void setHitbox();
+	
+	/** Draws the hitbox */
+	void drawHB() {
+		Asteroids.s.begin(ShapeType.Line);
+		Asteroids.s.setColor(1, 1, 0, 1);
+		Asteroids.s.polygon(hitbox.getTransformedVertices());
+		Asteroids.s.end();
+	}
 
 	/** Some verbose stuff */
 	public String toString() {
@@ -110,4 +137,13 @@ public abstract class Entity {
 				+ "\n" + "Velocity: (" + vx + ", " + vy + ")"
 				+ "\n" + "Position: (" + x + ", " + y + ")";
 	}
+	
+	public class JavaClass extends Abstract implements Interface, InterfaceTwo {}
+	
+	public abstract class Abstract {}
+
+	public interface Interface {}
+	
+	public interface InterfaceTwo {}
 }
+

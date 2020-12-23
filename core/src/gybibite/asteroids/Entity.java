@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
@@ -72,6 +71,25 @@ public abstract class Entity {
 	float[] getV() {
 		return new float[] { vx, vy };
 	}
+	
+	/** Returns the X position of the sprite */
+	float getX() {
+		return x;
+	}
+	
+	/** Returns the Y position of the sprite */
+	float getY() {
+		return y;
+	}
+	
+	/** Returns the rotation angle of the sprite */
+	float getRot() {
+		return rot;
+	}
+	
+	int getId() {
+		return id;
+	}
 
 	/** Positions "clones" to emulate screen texture wrapping */
 	void posClones() {
@@ -95,11 +113,17 @@ public abstract class Entity {
 		sprite.setPosition(centerX(x), centerY(y));
 		posClones();
 		// Tell the sprite batch to draw
+		sprite.setRotation(rot);
 		sprite.draw(batch);
 		for (Sprite s : clones) {
 			s.setRotation(rot);
 			s.draw(batch);
 		}
+	}
+	
+	/** Tells the main class to draw the hitbox to the screen */
+	void drawHB() {
+		Asteroids.drawPoly(hitbox.getTransformedVertices());
 	}
 
 	/**
@@ -119,31 +143,21 @@ public abstract class Entity {
 	/** Defines how the entity interacts with the world every server cycle */
 	abstract void tick();
 	
-	/** Defines the hitbox vertices */
+	/** Sets the hitbox vertices */
 	abstract void setHitbox();
 	
-	/** Draws the hitbox */
-	void drawHB() {
-		Asteroids.s.begin(ShapeType.Line);
-		Asteroids.s.setColor(1, 1, 0, 1);
-		Asteroids.s.polygon(hitbox.getTransformedVertices());
-		Asteroids.s.end();
-	}
+	/** Gets the hitbox object of the entity */
+	abstract Object getHitbox();
+	
+	/** Checks if the entity has hit another valid entity */
+	abstract void checkHit();
 
 	/** Some verbose stuff */
 	public String toString() {
 		return "-----------------"
-				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + Asteroids.entities.indexOf(this, false)
+				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + Asteroids.entities.indexOf(this, true)
 				+ "\n" + "Velocity: (" + vx + ", " + vy + ")"
 				+ "\n" + "Position: (" + x + ", " + y + ")";
 	}
-	
-	public class JavaClass extends Abstract implements Interface, InterfaceTwo {}
-	
-	public abstract class Abstract {}
-
-	public interface Interface {}
-	
-	public interface InterfaceTwo {}
 }
 

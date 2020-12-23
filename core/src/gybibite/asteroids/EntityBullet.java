@@ -1,12 +1,13 @@
 package gybibite.asteroids;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class EntityBullet extends Entity {
 
-	EntityPlayer pl;
+	Entity pl;
 	float originX, originY;
 	/** Max bullet speed */
 	static final float BULLET_SPEED = 500;
@@ -15,12 +16,12 @@ public class EntityBullet extends Entity {
 	
 	long age;
 
-	public EntityBullet(float scale, EntityPlayer pl) {
+	public EntityBullet(float scale, Entity pl) {
 		super(scale, 1, new Texture("bullet.png"));
 		this.pl = pl;
-		this.originX = pl.x;
-		this.originY = pl.y;
-		this.rot = pl.rot;
+		this.originX = pl.getX();
+		this.originY = pl.getY();
+		this.rot = pl.getRot();
 
 		x = originX;
 		y = originY;
@@ -58,6 +59,19 @@ public class EntityBullet extends Entity {
 		hitbox.setRotation(rot);
 		hitbox.setPosition(x, y);
 	}
+	
+	void checkHit() {
+		for (int i = 0; i < Asteroids.getEntities().size; i++) {
+			if(Asteroids.getEntities().items[i] != pl) {
+				if(Asteroids.getEntities().items[i].getId() == 2) {
+					if(Asteroids.overlaps(hitbox, (Circle) Asteroids.getEntities().items[i].getHitbox())) {
+						Asteroids.getEntities().items[i].kill();
+						break;
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	void setHitbox() {
@@ -67,5 +81,9 @@ public class EntityBullet extends Entity {
 				0 - sprite.getWidth(), 0 - sprite.getHeight() };
 
 		hitbox = new Polygon(hb);
+	}
+	
+	Polygon getHitbox() {
+		return hitbox;
 	}
 }

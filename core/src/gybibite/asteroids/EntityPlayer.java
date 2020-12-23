@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
 
 public class EntityPlayer extends Entity {
@@ -41,11 +42,9 @@ public class EntityPlayer extends Entity {
 		// Check movement keys
 		if (rightPressed) {
 			rot = (rot - RSPEED) % 360;
-			sprite.setRotation(rot);
 		}
 		if (leftPressed) {
 			rot = (rot + RSPEED) % 360;
-			sprite.setRotation(rot);
 		}
 		if (upPressed) {
 			vy += (float) (Math.cos(Math.toRadians(rot))) * ACCEL;
@@ -67,8 +66,7 @@ public class EntityPlayer extends Entity {
 		vx = (float) (Math.floor(vx * 10000) / 10000);
 		vy = (float) (Math.floor(vy * 10000) / 10000);
 
-		// TODO: REMOVE LATER
-		if (downPressed) {
+		if (downPressed && Asteroids.isVerbose()) {
 			vy = 0;
 			vx = 0;
 		}
@@ -94,13 +92,26 @@ public class EntityPlayer extends Entity {
 		hitbox.setPosition(x, y);
 	}
 
+	void checkHit() {
+		for (int i = 0; i < Asteroids.getEntities().size; i++) {
+			if (Asteroids.getEntities().items[i].getId() == 2) {
+				if (Asteroids.overlaps(hitbox, (Circle) Asteroids.getEntities().items[i].getHitbox())) {
+					Asteroids.getEntities().items[i].kill();
+					break;
+				}
+			}
+		}
+	}
+
 	@Override
 	void setHitbox() {
-		hb = new float[] { 0, sprite.getHeight() / 1.3f,
-				sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f,
-				0, -sprite.getHeight() / 1.3f,
-				-sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f };
+		hb = new float[] { 0, sprite.getHeight() / 1.3f, sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f, 0,
+				-sprite.getHeight() / 1.3f, -sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f };
 
 		hitbox = new Polygon(hb);
+	}
+
+	Polygon getHitbox() {
+		return hitbox;
 	}
 }

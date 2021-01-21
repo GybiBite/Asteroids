@@ -2,6 +2,7 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -13,7 +14,7 @@ public class EntityBullet extends Entity {
 	static final float BULLET_SPEED = 500;
 	/** How long does the bullet live before dying (ms) */
 	static final float BULLET_TIME = 800;
-	
+
 	long age;
 
 	public EntityBullet(float scale, Entity pl) {
@@ -28,22 +29,23 @@ public class EntityBullet extends Entity {
 
 		vy = (float) (Math.cos(Math.toRadians(rot))) * BULLET_SPEED;
 		vx = -(float) (Math.sin(Math.toRadians(rot))) * BULLET_SPEED;
-		
+
 		age = TimeUtils.millis();
 
 		setHitbox();
 	}
 
 	@Override
-	void tick() {
-		// If the bullet has been alive as long as BULLET_TIME without hitting anything, kill the bullet
+	void tick(float delta) {
+		// If the bullet has been alive as long as BULLET_TIME without hitting anything,
+		// kill the bullet
 		if (TimeUtils.timeSinceMillis(age) >= BULLET_TIME) {
-			this.kill();
+			this.delete();
 		}
 
 		x += vx * delta;
 		y += vy * delta;
-		
+
 		if (x <= 0) {
 			x = S_WIDTH;
 		} else if (x >= S_WIDTH) {
@@ -59,13 +61,20 @@ public class EntityBullet extends Entity {
 		hitbox.setRotation(rot);
 		hitbox.setPosition(x, y);
 	}
-	
+
 	void checkHit() {
-		for (int i = 0; i < Asteroids.getEntities().size; i++) {
-			if(Asteroids.getEntities().items[i] != pl) {
-				if(Asteroids.getEntities().items[i].getId() == 2) {
-					if(Asteroids.overlaps(hitbox, (Circle) Asteroids.getEntities().items[i].getHitbox())) {
-						Asteroids.getEntities().items[i].kill();
+		for (Entity e : GameUI.getEntities()) {
+			if (e != pl) {
+				if (e.getId() == 2) {
+					if (GameUI.overlaps(hitbox, (Circle) e.getHitbox())) {
+						e.delete();
+						this.delete();
+						break;
+					}
+				} else if (e.getId() != 1) {
+					if (Intersector.intersectPolygons(hitbox, (Polygon) e.getHitbox(), null)) {
+						e.delete();
+						this.delete();
 						break;
 					}
 				}
@@ -75,15 +84,19 @@ public class EntityBullet extends Entity {
 
 	@Override
 	void setHitbox() {
-		hb = new float[] { 0 - sprite.getWidth(), sprite.getHeight(),
-				sprite.getWidth(), sprite.getHeight(),
-				sprite.getWidth(), 0 - sprite.getHeight(),
-				0 - sprite.getWidth(), 0 - sprite.getHeight() };
+		hb = new float[] { 0 - sprite.getWidth(), sprite.getHeight(), sprite.getWidth(), sprite.getHeight(),
+				sprite.getWidth(), 0 - sprite.getHeight(), 0 - sprite.getWidth(), 0 - sprite.getHeight() };
 
 		hitbox = new Polygon(hb);
 	}
-	
+
 	Polygon getHitbox() {
 		return hitbox;
+	}
+
+	@Override
+	void die() {
+		// TODO Auto-generated method stub
+		
 	}
 }

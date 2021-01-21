@@ -17,7 +17,7 @@ public class EntityAsteroid extends Entity {
 		this.x = x;
 		this.y = y;
 
-		double speed = Math.random();
+		double speed = Math.random() * (0.9-0.15) + 0.15;
 
 		rot = (float) ((speed * 720) - 360);
 		rotSpeed = speed * 2;
@@ -31,7 +31,7 @@ public class EntityAsteroid extends Entity {
 	}
 
 	@Override
-	void tick() {
+	void tick(float delta) {
 		x += vx * delta;
 		y += vy * delta;
 
@@ -55,13 +55,22 @@ public class EntityAsteroid extends Entity {
 					clones[i].getY() + sprite.getHeight() / 2);
 		}
 	}
-	
+
 	void checkHit() {}
+
+	@Override
+	public void delete() {
+		if (size > 0) {
+			new EntityAsteroid(size - 1, x, y);
+		}
+		GameUI.destroyEntity(this);
+		dispose();
+	}
 
 	@Override
 	void setHitbox() {
 		posClones();
-		if (size == 1 | size == 0) {
+		if (size == 1 || size == 0) {
 			hitbox = new Circle(x, y, sprite.getWidth());
 			for (int i = 0; i < clones.length; i++) {
 				cloneHitbox[i] = new Circle(clones[i].getX(), clones[i].getY(), sprite.getWidth());
@@ -76,9 +85,9 @@ public class EntityAsteroid extends Entity {
 
 	@Override
 	void drawHB() {
-		Asteroids.drawCirc(hitbox);
+		GameUI.drawCirc(hitbox);
 		for (Circle c : cloneHitbox) {
-			Asteroids.drawCirc(c);
+			GameUI.drawCirc(c);
 		}
 	}
 
@@ -95,15 +104,21 @@ public class EntityAsteroid extends Entity {
 		}
 	}
 
-	static int setScale(int size) {
-		if (size == 0 | size == 1) {
-			return 2;
+	static float setScale(float size) {
+		if (size == 0 || size == 1) {
+			return 2.5f;
 		} else {
-			return 3;
+			return 3.75f;
 		}
 	}
-	
+
 	Circle getHitbox() {
 		return hitbox;
+	}
+
+	@Override
+	void die() {
+		// TODO Auto-generated method stub
+		
 	}
 }

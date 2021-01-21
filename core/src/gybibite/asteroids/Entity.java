@@ -1,6 +1,5 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,17 +7,24 @@ import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
 	/** An ID for checking entity types */
-	int id;
-	Texture tex;
-	Sprite sprite;
+	protected int id;
+	/** Set to true if entity was hit */
+	private boolean wasHit;
+	protected Texture tex;
+	protected Sprite sprite;
 	/** Clones for screen wrapping */
-	Sprite[] clones = new Sprite[8];
+	protected Sprite[] clones = new Sprite[8];
 	/** Polygon object for controlling the hitbox */
-	Polygon hitbox;
+	protected Polygon hitbox;
 	/** Constants for window size */
-	protected static final int S_WIDTH = Asteroids.S_WIDTH, S_HEIGHT = Asteroids.S_HEIGHT;
+	protected static final int S_WIDTH = Asteroids.S_WIDTH;
+	protected static final int S_HEIGHT = Asteroids.S_HEIGHT;
 	/** Positional variables */
-	float x, y, vx, vy, rot, delta;
+	float x;
+	float y;
+	float vx;
+	float vy;
+	float rot;
 	/** Hitbox definition */
 	float[] hb;
 
@@ -46,7 +52,7 @@ public abstract class Entity {
 		}
 
 		// Keep track of this entity in the entity list
-		Asteroids.addEntity(this);
+		GameUI.addEntity(this);
 	}
 
 	/**
@@ -87,6 +93,7 @@ public abstract class Entity {
 		return rot;
 	}
 	
+	/** Returns the entity "type" */
 	int getId() {
 		return id;
 	}
@@ -108,7 +115,6 @@ public abstract class Entity {
 	 * @param batch The sprite batch to be passed to the draw command
 	 */
 	public void render(SpriteBatch batch) {
-		delta = Gdx.graphics.getDeltaTime();
 		// Set sprite location
 		sprite.setPosition(centerX(x), centerY(y));
 		posClones();
@@ -123,7 +129,7 @@ public abstract class Entity {
 	
 	/** Tells the main class to draw the hitbox to the screen */
 	void drawHB() {
-		Asteroids.drawPoly(hitbox.getTransformedVertices());
+		GameUI.drawPoly(hitbox.getTransformedVertices());
 	}
 
 	/**
@@ -135,13 +141,13 @@ public abstract class Entity {
 	}
 
 	/** Removes the entity when necessary */
-	public void kill() {
-		Asteroids.destroyEntity(this);
+	public void delete() {
+		GameUI.destroyEntity(this);
 		dispose();
 	}
 
 	/** Defines how the entity interacts with the world every server cycle */
-	abstract void tick();
+	abstract void tick(float delta);
 	
 	/** Sets the hitbox vertices */
 	abstract void setHitbox();
@@ -151,13 +157,23 @@ public abstract class Entity {
 	
 	/** Checks if the entity has hit another valid entity */
 	abstract void checkHit();
+	
+	/** 
+	 * Called when the entity dies
+	 * (for playing animations, sounds, triggering event, etc.)
+	 */
+	abstract void die();
 
 	/** Some verbose stuff */
 	public String toString() {
 		return "-----------------"
-				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + Asteroids.entities.indexOf(this, true)
+				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + GameUI.entities.indexOf(this, true)
 				+ "\n" + "Velocity: (" + vx + ", " + vy + ")"
 				+ "\n" + "Position: (" + x + ", " + y + ")";
+	}
+
+	public void checkInput(boolean[] buttons) {
+		// Reserved for playable entities
 	}
 }
 

@@ -9,7 +9,8 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class EntityBullet extends Entity {
 
 	Entity pl;
-	float originX, originY;
+	float originX;
+	float originY;
 	/** Max bullet speed */
 	static final float BULLET_SPEED = 500;
 	/** How long does the bullet live before dying (ms) */
@@ -62,19 +63,20 @@ public class EntityBullet extends Entity {
 		hitbox.setPosition(x, y);
 	}
 
+	@Override
 	void checkHit() {
 		for (Entity e : GameUI.getEntities()) {
 			if (e != pl) {
 				if (e.getId() == 2) {
 					if (GameUI.overlaps(hitbox, (Circle) e.getHitbox())) {
-						e.delete();
-						this.delete();
+						e.die();
+						this.die();
 						break;
 					}
 				} else if (e.getId() != 1) {
 					if (Intersector.intersectPolygons(hitbox, (Polygon) e.getHitbox(), null)) {
-						e.delete();
-						this.delete();
+						e.die();
+						this.die();
 						break;
 					}
 				}
@@ -90,13 +92,13 @@ public class EntityBullet extends Entity {
 		hitbox = new Polygon(hb);
 	}
 
+	@Override
 	Polygon getHitbox() {
 		return hitbox;
 	}
 
 	@Override
 	void die() {
-		// TODO Auto-generated method stub
-		
+		this.delete();
 	}
 }

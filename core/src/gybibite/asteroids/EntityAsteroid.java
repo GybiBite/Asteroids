@@ -56,16 +56,8 @@ public class EntityAsteroid extends Entity {
 		}
 	}
 
-	void checkHit() {}
-
 	@Override
-	public void delete() {
-		if (size > 0) {
-			new EntityAsteroid(size - 1, x, y);
-		}
-		GameUI.destroyEntity(this);
-		dispose();
-	}
+	void checkHit() {/* Asteroids dont need hits checked. The player does that itself.*/}
 
 	@Override
 	void setHitbox() {
@@ -76,9 +68,9 @@ public class EntityAsteroid extends Entity {
 				cloneHitbox[i] = new Circle(clones[i].getX(), clones[i].getY(), sprite.getWidth());
 			}
 		} else {
-			hitbox = new Circle(x, y, sprite.getWidth() * 1.3f);
+			hitbox = new Circle(x, y, sprite.getWidth() * 1.625f);
 			for (int i = 0; i < clones.length; i++) {
-				cloneHitbox[i] = new Circle(clones[i].getX(), clones[i].getY(), sprite.getWidth() * 1.3f);
+				cloneHitbox[i] = new Circle(clones[i].getX(), clones[i].getY(), sprite.getWidth() * 1.625f);
 			}
 		}
 	}
@@ -112,13 +104,16 @@ public class EntityAsteroid extends Entity {
 		}
 	}
 
+	@Override
 	Circle getHitbox() {
 		return hitbox;
 	}
 
 	@Override
 	void die() {
-		// TODO Auto-generated method stub
-		
+		if (size > 0) {
+			new EntityAsteroid(size - 1, x, y);
+		}
+		this.delete();
 	}
 }

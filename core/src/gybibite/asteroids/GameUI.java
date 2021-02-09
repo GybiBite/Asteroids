@@ -26,15 +26,12 @@ public class GameUI implements Screen {
 
 	private long timeLast;
 	Random rand = new Random();
-	
-	public GameUI(){
-	}
 
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
 		s = new ShapeRenderer();
-		new EntityPlayer(1.875f); // Creates a new player (ship), while passing the sprite batch so it can render
+		new EntityPlayer(1.875f, 1); // Creates a new player (ship), while passing the sprite batch so it can render
 	}
 
 	@Override
@@ -69,13 +66,13 @@ public class GameUI implements Screen {
 
 		if (Asteroids.isVerbose()) {
 			for (Entity e : entities) {
-				System.out.println(e); // Print entity info
+				Gdx.app.log("ENTITYLIST", e.toString()); // Print entity info
 				s.begin(ShapeType.Line); // Begin the shape renderer for type Line
 				s.setColor(1, 1, 0, 1); // Set the line color to yellow
 				e.drawHB(); // Draw the polygon representing the polygon
 				s.end(); // End the shape renderer
 			}
-			System.out.println("===== END OF FRAME =====");
+			Gdx.app.log("ENTITYLIST", "===== END OF FRAME =====");
 		}
 
 		if (TimeUtils.timeSinceMillis(timeLast) > SPAWN_TIME) {

@@ -1,5 +1,6 @@
 package gybibite.asteroids;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +10,7 @@ public abstract class Entity {
 	/** An ID for checking entity types */
 	protected int id;
 	/** Set to true if entity was hit */
-	private boolean wasHit;
+	protected boolean wasHit;
 	protected Texture tex;
 	protected Sprite sprite;
 	/** Clones for screen wrapping */
@@ -165,6 +166,7 @@ public abstract class Entity {
 	abstract void die();
 
 	/** Some verbose stuff */
+	@Override
 	public String toString() {
 		return "-----------------"
 				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + GameUI.entities.indexOf(this, true)
@@ -173,7 +175,7 @@ public abstract class Entity {
 	}
 
 	public void checkInput(boolean[] buttons) {
-		// Reserved for playable entities
+		Gdx.app.log("INPUT", "Input can only be checked for a playable entity");
 	}
 }
 

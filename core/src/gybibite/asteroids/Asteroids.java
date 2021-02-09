@@ -9,7 +9,7 @@ public class Asteroids extends Game {
 	public static final int S_WIDTH = 800;
 	public static final int S_HEIGHT = 600;
 
-	static boolean verbose = false;
+	static boolean verbose;
 
 	// This is just here to parse arguments
 	public Asteroids(String[] arg) {
@@ -40,6 +40,7 @@ public class Asteroids extends Game {
 
 	@Override
 	public void dispose() {
+		// There's nothing to dispose of in this class.
 	}
 
 	public static boolean isVerbose() {

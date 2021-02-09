@@ -1,8 +1,5 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
@@ -17,28 +14,30 @@ public class EntityPlayer extends Entity {
 	static final float RSPEED = 3f;
 	static final float MAX_SPEED = 218.75f;
 
-	EntityPlayer(float scale) {
+	/** Which player the current entity is (1, 2, etc..) */
+	final int player;
+
+	EntityPlayer(float scale, int player) {
 		super(scale, 0, new Texture("ship.png"));
 
 		x = S_WIDTH / 2;
 		y = S_HEIGHT / 2;
 
+		this.player = player;
+
 		setHitbox();
 	}
 
+	@Override
 	/** Checks if certain keys are being held down */
 	public void checkInput(boolean[] buttons) {
-//		rightPressed = (Gdx.input.isKeyPressed(Keys.RIGHT) | Gdx.input.isKeyPressed(Keys.D));
-//		leftPressed = (Gdx.input.isKeyPressed(Keys.LEFT) | Gdx.input.isKeyPressed(Keys.A));
-//		upPressed = (Gdx.input.isKeyPressed(Keys.UP) | Gdx.input.isKeyPressed(Keys.W));
-//		downPressed = (Gdx.input.isKeyPressed(Keys.DOWN) | Gdx.input.isKeyPressed(Keys.S));
-//		firePressed = (Gdx.input.isButtonJustPressed(Buttons.LEFT));
-		
-		upPressed = buttons[0];
-		downPressed = buttons[1];
-		leftPressed = buttons[2];
-		rightPressed = buttons[3];
-		firePressed = buttons[4];
+		if (player == 1) {
+			upPressed = buttons[0];
+			downPressed = buttons[1];
+			leftPressed = buttons[2];
+			rightPressed = buttons[3];
+			firePressed = buttons[4];
+		}
 	}
 
 	@Override
@@ -97,12 +96,13 @@ public class EntityPlayer extends Entity {
 		hitbox.setPosition(x, y);
 	}
 
+	@Override
 	void checkHit() {
-		for (int i = 0; i < GameUI.getEntities().size; i++) {
-			if (GameUI.getEntities().items[i].getId() == 2) {
-				if (GameUI.overlaps(hitbox, (Circle) GameUI.getEntities().items[i].getHitbox())) {
-					GameUI.getEntities().items[i].delete();
-					this.delete();
+		for (int i = 0; i < GameUI.getEntities().size; i++) { // For every entity in the game
+			if (GameUI.getEntities().items[i].getId() == 2) { // if the entity is an asteroid
+				if (GameUI.overlaps(hitbox, (Circle) GameUI.getEntities().items[i].getHitbox())) { // and hitboxes are colliding
+					GameUI.getEntities().items[i].die();
+					this.die();
 					break;
 				}
 			}
@@ -117,13 +117,15 @@ public class EntityPlayer extends Entity {
 		hitbox = new Polygon(hb);
 	}
 
+	@Override
 	Polygon getHitbox() {
 		return hitbox;
 	}
 
 	@Override
 	void die() {
-		// TODO Auto-generated method stub
-		
+		if(!wasHit) {
+			this.delete();
+		}
 	}
 }

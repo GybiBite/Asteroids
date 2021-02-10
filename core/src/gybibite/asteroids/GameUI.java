@@ -2,10 +2,11 @@ package gybibite.asteroids;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -16,16 +17,21 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class GameUI implements Screen {
+public class GameUI extends ScreenAdapter {
 	
 	static SpriteBatch batch;
 	static ShapeRenderer s;
 	static Array<Entity> entities = new Array<>(new Entity[0]);
+	Game g;
 
 	private static final int SPAWN_TIME = 5000;
 
 	private long timeLast;
 	Random rand = new Random();
+	
+	GameUI(Game g){
+		this.g = g;
+	}
 
 	@Override
 	public void show() {
@@ -68,6 +74,7 @@ public class GameUI implements Screen {
 			for (Entity e : entities) {
 				Gdx.app.log("ENTITYLIST", e.toString()); // Print entity info
 				s.begin(ShapeType.Line); // Begin the shape renderer for type Line
+				Gdx.gl.glLineWidth(1);
 				s.setColor(1, 1, 0, 1); // Set the line color to yellow
 				e.drawHB(); // Draw the polygon representing the polygon
 				s.end(); // End the shape renderer
@@ -82,16 +89,6 @@ public class GameUI implements Screen {
 			new EntityAsteroid(rand.nextInt(3), rand.nextInt(640), rand.nextInt(480));
 			new EntityAsteroid(rand.nextInt(3), rand.nextInt(640), rand.nextInt(480));
 		}
-	}
-
-	
-	@Override
-	public void resize(int width, int height) {
-		/*
-		 * Placeholder method from Screen class.
-		 * Game scales upon resize automatically,
-		 * so nothing needs to be done here.
-		 */
 	}
 
 	@Override

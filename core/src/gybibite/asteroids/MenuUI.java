@@ -1,50 +1,48 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class MenuUI implements Screen{
+public class MenuUI extends ScreenAdapter {
 
-	public MenuUI() {
+	SpriteBatch sb;
+	ShapeRenderer sr;
+	Button button;
+	Game g;
+
+	public MenuUI(Game g) {
+		sb = new SpriteBatch();
+		sr = new ShapeRenderer();
+		this.g = g;
 	}
 
 	@Override
 	public void show() {
-		
+		button = new Button(400, 300, 175, 40, "uew5rfbivaeuyt", sb, sr).setClickEvent(() -> {
+			g.setScreen(new GameUI(g));
+		});
 	}
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
+		button.render();
+		button.checkHover(Gdx.input.getX(), Gdx.input.getY(), Gdx.input.isButtonJustPressed(Buttons.LEFT));
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

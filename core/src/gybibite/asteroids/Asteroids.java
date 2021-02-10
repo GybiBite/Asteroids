@@ -23,7 +23,7 @@ public class Asteroids extends Game {
 	@Override
 	public void create() {
 		Gdx.graphics.setWindowedMode(800, 600);
-		setScreen(new MenuUI());
+		setScreen(new MenuUI(this));
 	}
 
 	@Override

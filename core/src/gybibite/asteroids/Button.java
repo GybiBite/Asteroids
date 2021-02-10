@@ -2,11 +2,11 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Null;
+import com.badlogic.gdx.utils.Align;
 
 interface EventListener {
 	public void trigger();
@@ -23,16 +23,20 @@ public class Button {
 	private int height;
 	private float[] corners;
 
+	private boolean enabled = true;
+	private boolean highlighted;
+
 	/** Text to be displayed on the button */
 	private String label;
 	private ShapeRenderer sr;
 	private SpriteBatch sb;
 	private BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fsex300.fnt"),
 			Gdx.files.internal("assets/fsex300.png"), false);
+	private GlyphLayout gly = new GlyphLayout();
 
-	private Array<EventListener> events;
+	private EventListener event;
 
-	public Button(int width, int height, int x, int y, String label, SpriteBatch sb, ShapeRenderer sr) {
+	public Button(int x, int y, int width, int height, String label, SpriteBatch sb, ShapeRenderer sr) {
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -40,38 +44,58 @@ public class Button {
 		this.label = label;
 		this.sb = sb;
 		this.sr = sr;
-		corners = new float[] { x - width / 2, y + height / 2, x + width / 2, y + height / 2, x - width / 2,
-				y - height / 2, x + width / 2, y - height / 2 };
+		corners = new float[] { x - width / 2, y + height / 2, x + width / 2, y + height / 2, x + width / 2,
+				y - height / 2, x - width / 2, y - height / 2 };
+		gly.setText(font, label);
+
+		font.getData().setScale((float) (width * 0.8) / gly.width);
 	}
 
-	public void addClickEvent(EventListener listener) {
-		events.add(listener);
+	public Button setClickEvent(EventListener listener) {
+		this.event = listener;
+		return this;
 	}
 
-	public void runEvents() {
-		for (EventListener l : events) {
-			l.trigger();
-		}
+	public void runEvent() {
+		event.trigger();
 	}
 
 	public void render() {
+		sr.begin(ShapeType.Line);
+		if (highlighted)
+			sr.setColor(1, 1, 1, 1);
+		else
+			sr.setColor(0.5f, 0.5f, 0.5f, 1);
+		Gdx.gl.glLineWidth(3);
+		for (int i = 0; i <= corners.length; i += 2) {
+			sr.line(corners[i % 8], corners[(i + 1) % 8], corners[(i + 2) % 8], corners[(i + 3) % 8]);
+		}
+		sr.end();
 
+		sb.begin();
+		if(enabled)
+			font.setColor(1, 1, 1, 1);
+		else
+			font.setColor(0.7f, 0.7f, 0.7f, 1);
+		font.draw(sb, label, x - width / 2, y + font.getLineHeight() / 4, width, Align.center, false);
+		sb.end();
 	}
 
 	public void checkHover(int mouseX, int mouseY, boolean mouseClicked) {
-		if (mouseX > x - width / 2 && mouseX < x + width / 2 && mouseY > y - height / 2 && mouseY < y + height / 2) {
-			// TODO make a draw method of sorts, determine button style for drawing
-			drawOutline();
+		highlighted = false;
+		if (enabled && mouseX > x - width / 2 && mouseX < x + width / 2 && mouseY > y - height / 2 && mouseY < y + height / 2) {
+			highlighted = true;
 			if (mouseClicked)
-				runEvents();
+				runEvent();
 		}
 	}
 
-	public void drawOutline() {
-		sr.begin(ShapeType.Line);
-		sr.setColor(1, 1, 1, 1);
-		sr.polygon(corners);
-		sr.end();
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 	public int getWidth() {
@@ -94,16 +118,15 @@ public class Button {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setPos(int x, int y) {
 		this.x = x;
+		this.y = y;
+		corners = new float[] { x - width / 2, y + height / 2, x + width / 2, y + height / 2, x - width / 2,
+				y - height / 2, x + width / 2, y - height / 2 };
 	}
 
 	public int getY() {
 		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
 	}
 
 	public String getLabel() {

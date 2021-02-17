@@ -2,6 +2,7 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 
 public class Asteroids extends Game {
@@ -10,6 +11,8 @@ public class Asteroids extends Game {
 	public static final int S_HEIGHT = 600;
 
 	static boolean verbose;
+
+	static ScreenAdapter menu, game;
 
 	// This is just here to parse arguments
 	public Asteroids(String[] arg) {
@@ -23,7 +26,11 @@ public class Asteroids extends Game {
 	@Override
 	public void create() {
 		Gdx.graphics.setWindowedMode(800, 600);
-		setScreen(new MenuUI(this));
+//		Gdx.graphics.setResizable(false);
+		menu = new MenuUI(this);
+		game = new GameUI(this);
+
+		setScreen(menu);
 	}
 
 	@Override
@@ -33,8 +40,21 @@ public class Asteroids extends Game {
 		super.render(); // Make sure that the active screen renders
 
 		if (verbose) {
-			Gdx.graphics.setTitle("Asteroids - FPS: "
-					+ Math.floor(1 / Gdx.graphics.getDeltaTime() * 10) / 10); // Add the FPS to the  window title
+			// Write FPS to the window's title bar
+			Gdx.graphics.setTitle("Asteroids - FPS: " + Math.floor(1 / Gdx.graphics.getDeltaTime() * 10) / 10);
+		}
+	}
+
+	public void switchScreen(int s) {
+		switch (s) {
+		case 0:
+			setScreen(menu);
+			break;
+		case 1:
+			setScreen(game);
+			break;
+		default:
+			setScreen(menu);
 		}
 	}
 

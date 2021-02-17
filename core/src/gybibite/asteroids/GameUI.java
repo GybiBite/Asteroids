@@ -2,7 +2,6 @@ package gybibite.asteroids;
 
 import java.util.Random;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
@@ -21,18 +20,18 @@ public class GameUI extends ScreenAdapter {
 	
 	static SpriteBatch batch;
 	static ShapeRenderer s;
+	Asteroids g;
 	static Array<Entity> entities = new Array<>(new Entity[0]);
-	Game g;
 
 	private static final int SPAWN_TIME = 5000;
 
 	private long timeLast;
 	Random rand = new Random();
-	
-	GameUI(Game g){
+
+	GameUI(Asteroids g){
 		this.g = g;
 	}
-
+	
 	@Override
 	public void show() {
 		batch = new SpriteBatch();

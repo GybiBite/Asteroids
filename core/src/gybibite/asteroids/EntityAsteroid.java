@@ -113,6 +113,7 @@ public class EntityAsteroid extends Entity {
 	void die() {
 		if (size > 0) {
 			new EntityAsteroid(size - 1, x, y);
+			new EntityAsteroid(size - 1, x, y);
 		}
 		this.delete();
 	}

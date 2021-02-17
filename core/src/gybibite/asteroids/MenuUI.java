@@ -1,6 +1,5 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.Input.Buttons;
@@ -12,9 +11,9 @@ public class MenuUI extends ScreenAdapter {
 	SpriteBatch sb;
 	ShapeRenderer sr;
 	Button button;
-	Game g;
+	Asteroids g;
 
-	public MenuUI(Game g) {
+	public MenuUI(Asteroids g) {
 		sb = new SpriteBatch();
 		sr = new ShapeRenderer();
 		this.g = g;
@@ -22,9 +21,9 @@ public class MenuUI extends ScreenAdapter {
 
 	@Override
 	public void show() {
-		button = new Button(400, 300, 175, 40, "uew5rfbivaeuyt", sb, sr).setClickEvent(() -> {
-			g.setScreen(new GameUI(g));
-		});
+		button = new Button(400, 100, 175, 40, "Start game", sb, sr).setClickEvent(() ->
+			g.switchScreen(1)
+		);
 	}
 
 	@Override
@@ -44,5 +43,4 @@ public class MenuUI extends ScreenAdapter {
 		// TODO Auto-generated method stub
 
 	}
-
 }

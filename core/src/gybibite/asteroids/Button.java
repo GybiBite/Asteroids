@@ -14,28 +14,47 @@ interface EventListener {
 
 public class Button {
 
-	/** X position of the button's center */
-	private int x;
-	/** Y position of the button's center */
-	private int y;
+	/** Position of the button's center */
+	private int x, y;
 
-	private int width;
-	private int height;
+	/** Size of the button */
+	private int width, height;
+	
+	/** Hold the position of the corners of the button */
 	private float[] corners;
 
+	/** Represents if the button is clickable */
 	private boolean enabled = true;
+	
+	/** If true, highlights the outline of the button */
 	private boolean highlighted;
 
 	/** Text to be displayed on the button */
 	private String label;
+	
 	private ShapeRenderer sr;
 	private SpriteBatch sb;
+	private GlyphLayout gly = new GlyphLayout();
+	
+	/** What file to use for the font */
 	private BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fsex300.fnt"),
 			Gdx.files.internal("assets/fsex300.png"), false);
-	private GlyphLayout gly = new GlyphLayout();
 
+	/** When {@link #setClickEvent(EventListener)} is called, holds the button's action */
 	private EventListener event;
 
+	/**
+	 * Clickable button object that can be set to perform any generic set of
+	 * commands. The text of the button will scale based on the width.
+	 * 
+	 * @param x      X position of the button
+	 * @param y      Y position of the button
+	 * @param width  Width of the button, in pixels
+	 * @param height Height of the button, in pixels
+	 * @param label  The string of text to be displayed
+	 * @param sb     SpriteBatch to be passed for rendering
+	 * @param sr     ShapeRenderer to be passed for rendering
+	 */
 	public Button(int x, int y, int width, int height, String label, SpriteBatch sb, ShapeRenderer sr) {
 		this.width = width;
 		this.height = height;
@@ -48,18 +67,31 @@ public class Button {
 				y - height / 2, x - width / 2, y - height / 2 };
 		gly.setText(font, label);
 
-		font.getData().setScale((float) (width * 0.8) / gly.width);
+		font.getData().setScale(Math.min(((float) (width * 0.8) / gly.width), (float) (height * 0.75) / gly.height));
 	}
 
+	/**
+	 * Set the action to be performed by the button
+	 * 
+	 * @param listener Instance of EventListener to be assigned an action
+	 */
 	public Button setClickEvent(EventListener listener) {
 		this.event = listener;
 		return this;
 	}
 
+	/**
+	 * Run the action previously set for the button. Intended for internal use, but
+	 * no harm will be done by being used outside of the class.
+	 */
 	public void runEvent() {
 		event.trigger();
 	}
 
+	/** 
+	 * Renders the button to the screen using the previously passed
+	 * ShapeRenderer and SpriteBatch.
+	 */
 	public void render() {
 		sr.begin(ShapeType.Line);
 		if (highlighted)
@@ -81,8 +113,13 @@ public class Button {
 		sb.end();
 	}
 
+	/** 
+	 * Checks if the mouse is hovering over the button to highlight
+	 * it, and subsequently checks for a mouse click
+	 */
 	public void checkHover(int mouseX, int mouseY, boolean mouseClicked) {
 		highlighted = false;
+		mouseY = Math.abs(mouseY - Asteroids.S_HEIGHT);
 		if (enabled && mouseX > x - width / 2 && mouseX < x + width / 2 && mouseY > y - height / 2 && mouseY < y + height / 2) {
 			highlighted = true;
 			if (mouseClicked)
@@ -90,6 +127,12 @@ public class Button {
 		}
 	}
 
+	/**
+	 * Sets whether or not you can click on the button.
+	 * If the button is disabled, the text will be
+	 * grayed out.
+	 * @param enabled Whether or not button is enabled
+	 */
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}

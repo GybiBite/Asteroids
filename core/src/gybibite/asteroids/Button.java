@@ -9,38 +9,41 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Align;
 
 interface EventListener {
-	public void trigger();
+	void trigger();
 }
 
 public class Button {
-
-	/** Position of the button's center */
+	
+	/** Position of the button's center. */
 	private int x, y;
 
 	/** Size of the button */
 	private int width, height;
-	
-	/** Hold the position of the corners of the button */
+
+	/** Hold the position of the corners of the button. */
 	private float[] corners;
 
 	/** Represents if the button is clickable */
 	private boolean enabled = true;
-	
+
 	/** If true, highlights the outline of the button */
 	private boolean highlighted;
 
 	/** Text to be displayed on the button */
 	private String label;
-	
+
 	private ShapeRenderer sr;
 	private SpriteBatch sb;
 	private GlyphLayout gly = new GlyphLayout();
-	
-	/** What file to use for the font */
-	private BitmapFont font = new BitmapFont(Gdx.files.internal("assets/fsex300.fnt"),
-			Gdx.files.internal("assets/fsex300.png"), false);
 
-	/** When {@link #setClickEvent(EventListener)} is called, holds the button's action */
+	/** What file to use for the font */
+	private final BitmapFont font = new BitmapFont(Gdx.files.internal("fsex300.fnt"),
+			Gdx.files.internal("fsex300.png"), false);
+
+	/**
+	 * When {@link #setClickEvent(EventListener)} is called, holds the button's
+	 * action
+	 */
 	private EventListener event;
 
 	/**
@@ -68,6 +71,10 @@ public class Button {
 		gly.setText(font, label);
 
 		font.getData().setScale(Math.min(((float) (width * 0.8) / gly.width), (float) (height * 0.75) / gly.height));
+		
+		if(this instanceof EventListener) {
+			
+		}
 	}
 
 	/**
@@ -88,9 +95,9 @@ public class Button {
 		event.trigger();
 	}
 
-	/** 
-	 * Renders the button to the screen using the previously passed
-	 * ShapeRenderer and SpriteBatch.
+	/**
+	 * Renders the button to the screen using the previously passed ShapeRenderer
+	 * and SpriteBatch.
 	 */
 	public void render() {
 		sr.begin(ShapeType.Line);
@@ -105,7 +112,7 @@ public class Button {
 		sr.end();
 
 		sb.begin();
-		if(enabled)
+		if (enabled)
 			font.setColor(1, 1, 1, 1);
 		else
 			font.setColor(0.7f, 0.7f, 0.7f, 1);
@@ -113,14 +120,15 @@ public class Button {
 		sb.end();
 	}
 
-	/** 
-	 * Checks if the mouse is hovering over the button to highlight
-	 * it, and subsequently checks for a mouse click
+	/**
+	 * Checks if the mouse is hovering over the button to highlight it, and
+	 * subsequently checks for a mouse click.
 	 */
 	public void checkHover(int mouseX, int mouseY, boolean mouseClicked) {
 		highlighted = false;
 		mouseY = Math.abs(mouseY - Asteroids.S_HEIGHT);
-		if (enabled && mouseX > x - width / 2 && mouseX < x + width / 2 && mouseY > y - height / 2 && mouseY < y + height / 2) {
+		if (enabled && mouseX > x - width / 2 && mouseX < x + width / 2 && mouseY > y - height / 2
+				&& mouseY < y + height / 2) {
 			highlighted = true;
 			if (mouseClicked)
 				runEvent();
@@ -128,9 +136,9 @@ public class Button {
 	}
 
 	/**
-	 * Sets whether or not you can click on the button.
-	 * If the button is disabled, the text will be
-	 * grayed out.
+	 * Sets whether or not you can click on the button. If the button is disabled,
+	 * the text will be grayed out.
+	 * 
 	 * @param enabled Whether or not button is enabled
 	 */
 	public void setEnabled(boolean enabled) {

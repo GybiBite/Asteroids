@@ -7,17 +7,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
-	/** An ID for checking entity types */
-	protected int id;
-	/** Set to true if entity was hit */
+	
+	/** Set to true if entity was hit. */
 	protected boolean wasHit;
 	protected Texture tex;
 	protected Sprite sprite;
-	/** Clones for screen wrapping */
+	/** Clones for screen wrapping. */
 	protected Sprite[] clones = new Sprite[8];
-	/** Polygon object for controlling the hitbox */
+	/** Polygon object for controlling the hitbox. */
 	protected Polygon hitbox;
-	/** Constants for window size */
+	/** Constants for window size. */
 	protected static final int S_WIDTH = Asteroids.S_WIDTH;
 	protected static final int S_HEIGHT = Asteroids.S_HEIGHT;
 	/** Positional variables */
@@ -31,13 +30,13 @@ public abstract class Entity {
 
 	/**
 	 * The primary constructor for creating a new entity
+	 * 
 	 * @param scale How to scale the texture for the entity
-	 * @param id What ID to set (0: Player | 1: Bullet | 2: Asteroid | 3: UFO)
-	 * @param tex The texture to use (assets directory)
+	 * @param id    What ID to set (0: Player | 1: Bullet | 2: Asteroid | 3: UFO)
+	 * @param tex   The texture to use (assets directory)
 	 */
-	Entity(float scale, int id, Texture tex) {
-		this.id = id;
-		
+	Entity(float scale, Texture tex) {
+
 		this.tex = tex;
 		sprite = new Sprite(tex);
 
@@ -59,6 +58,7 @@ public abstract class Entity {
 	/**
 	 * Returns the center of the sprite's X position, since libGDX won't draw the
 	 * sprite centered on the coordinate
+	 * 
 	 * @param x X Position
 	 */
 	float centerX(float x) {
@@ -68,6 +68,7 @@ public abstract class Entity {
 	/**
 	 * Returns the center of the sprite's Y position, since libGDX won't draw the
 	 * sprite centered on the coordinate
+	 * 
 	 * @param y Y Position
 	 */
 	float centerY(float y) {
@@ -78,25 +79,20 @@ public abstract class Entity {
 	float[] getV() {
 		return new float[] { vx, vy };
 	}
-	
+
 	/** Returns the X position of the sprite */
 	float getX() {
 		return x;
 	}
-	
+
 	/** Returns the Y position of the sprite */
 	float getY() {
 		return y;
 	}
-	
+
 	/** Returns the rotation angle of the sprite */
 	float getRot() {
 		return rot;
-	}
-	
-	/** Returns the entity "type" */
-	int getId() {
-		return id;
 	}
 
 	/** Positions "clones" to emulate screen texture wrapping */
@@ -113,6 +109,7 @@ public abstract class Entity {
 
 	/**
 	 * Just tells the sprite batch to draw the ship
+	 * 
 	 * @param batch The sprite batch to be passed to the draw command
 	 */
 	public void render(SpriteBatch batch) {
@@ -127,14 +124,15 @@ public abstract class Entity {
 			s.draw(batch);
 		}
 	}
-	
+
 	/** Tells the main class to draw the hitbox to the screen */
 	void drawHB() {
 		GameUI.drawPoly(hitbox.getTransformedVertices());
 	}
 
 	/**
-	 * Disposes of any "Disposable" objects 
+	 * Disposes of any "Disposable" objects
+	 * 
 	 * @see com.badlogic.gdx.utils#Disposable
 	 */
 	public void dispose() {
@@ -149,33 +147,31 @@ public abstract class Entity {
 
 	/** Defines how the entity interacts with the world every server cycle */
 	abstract void tick(float delta);
-	
+
 	/** Sets the hitbox vertices */
 	abstract void setHitbox();
-	
+
 	/** Gets the hitbox object of the entity */
 	abstract Object getHitbox();
-	
+
 	/** Checks if the entity has hit another valid entity */
 	abstract void checkHit();
-	
-	/** 
-	 * Called when the entity dies
-	 * (for playing animations, sounds, triggering event, etc.)
+
+	/**
+	 * Called when the entity dies (for playing animations, sounds, triggering
+	 * event, etc.)
 	 */
 	abstract void die();
 
 	/** Some verbose stuff */
 	@Override
 	public String toString() {
-		return "-----------------"
-				+ "\n" + "Entity: " + this.getClass().getSimpleName() + " at " + GameUI.entities.indexOf(this, true)
-				+ "\n" + "Velocity: (" + vx + ", " + vy + ")"
-				+ "\n" + "Position: (" + x + ", " + y + ")";
+		return "-----------------" + "\n" + "Entity: " + this.getClass().getSimpleName() + " at "
+				+ GameUI.entities.indexOf(this, true) + "\n" + "Velocity: (" + vx + ", " + vy + ")" + "\n"
+				+ "Position: (" + x + ", " + y + ")";
 	}
 
 	public void checkInput(boolean[] buttons) {
 		Gdx.app.log("INPUT", "Input can only be checked for a playable entity");
 	}
 }
-

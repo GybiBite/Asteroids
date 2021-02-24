@@ -6,7 +6,10 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class EntityBullet extends Entity {
+import gybibite.asteroids.EntityTypes.Asteroid;
+import gybibite.asteroids.EntityTypes.Bullet;
+
+public class EntityBullet extends Entity implements Bullet {
 
 	Entity pl;
 	float originX;
@@ -19,7 +22,7 @@ public class EntityBullet extends Entity {
 	long age;
 
 	public EntityBullet(float scale, Entity pl) {
-		super(scale, 1, new Texture("bullet.png"));
+		super(scale, new Texture("bullet.png"));
 		this.pl = pl;
 		this.originX = pl.getX();
 		this.originY = pl.getY();
@@ -67,13 +70,13 @@ public class EntityBullet extends Entity {
 	void checkHit() {
 		for (Entity e : GameUI.getEntities()) {
 			if (e != pl) {
-				if (e.getId() == 2) {
+				if (e instanceof Asteroid) {
 					if (GameUI.overlaps(hitbox, (Circle) e.getHitbox())) {
 						e.die();
 						this.die();
 						break;
 					}
-				} else if (e.getId() != 1) {
+				} else if (!(e instanceof Bullet)) {
 					if (Intersector.intersectPolygons(hitbox, (Polygon) e.getHitbox(), null)) {
 						e.die();
 						this.die();

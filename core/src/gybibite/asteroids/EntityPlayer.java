@@ -4,7 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
 
-public class EntityPlayer extends Entity {
+import gybibite.asteroids.EntityTypes.Asteroid;
+import gybibite.asteroids.EntityTypes.Player;
+
+public class EntityPlayer extends Entity implements Player {
 
 	boolean upPressed, downPressed, leftPressed, rightPressed, firePressed;
 
@@ -18,7 +21,7 @@ public class EntityPlayer extends Entity {
 	final int player;
 
 	EntityPlayer(float scale, int player) {
-		super(scale, 0, new Texture("ship.png"));
+		super(scale, new Texture("ship.png"));
 
 		x = S_WIDTH / 2;
 		y = S_HEIGHT / 2;
@@ -99,7 +102,7 @@ public class EntityPlayer extends Entity {
 	@Override
 	void checkHit() {
 		for (int i = 0; i < GameUI.getEntities().size; i++) { // For every entity in the game
-			if (GameUI.getEntities().items[i].getId() == 2) { // if the entity is an asteroid
+			if (GameUI.getEntities().items[i] instanceof Asteroid) { // if the entity is an asteroid
 				if (GameUI.overlaps(hitbox, (Circle) GameUI.getEntities().items[i].getHitbox())) { // and hitboxes are colliding
 					GameUI.getEntities().items[i].die();
 					this.die();

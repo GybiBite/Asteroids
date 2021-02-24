@@ -3,7 +3,9 @@ package gybibite.asteroids;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 
-public class EntityAsteroid extends Entity {
+import gybibite.asteroids.EntityTypes.Asteroid;
+
+public final class EntityAsteroid extends Entity implements Asteroid {
 
 	int size;
 	Circle hitbox;
@@ -11,13 +13,13 @@ public class EntityAsteroid extends Entity {
 	double rotSpeed;
 
 	public EntityAsteroid(int size, float x, float y) {
-		super(setScale(size), 2, setTexture(size));
+		super(setScale(size), setTexture(size));
 
 		this.size = size;
 		this.x = x;
 		this.y = y;
 
-		double speed = Math.random() * (0.9-0.15) + 0.15;
+		double speed = Math.random() * (0.9 - 0.15) + 0.15;
 
 		rot = (float) ((speed * 720) - 360);
 		rotSpeed = speed * 2;
@@ -31,7 +33,7 @@ public class EntityAsteroid extends Entity {
 	}
 
 	@Override
-	void tick(float delta) {
+	void tick(final float delta) {
 		x += vx * delta;
 		y += vy * delta;
 
@@ -57,7 +59,9 @@ public class EntityAsteroid extends Entity {
 	}
 
 	@Override
-	void checkHit() {/* Asteroids dont need hits checked. The player does that itself.*/}
+	void checkHit() {
+		/* Asteroids don't need collision detection */
+	}
 
 	@Override
 	void setHitbox() {

@@ -16,6 +16,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import gybibite.asteroids.EntityTypes.Player;
+
 public class GameUI extends ScreenAdapter {
 	
 	static SpriteBatch batch;
@@ -50,7 +52,7 @@ public class GameUI extends ScreenAdapter {
 		for (int i = 0; i < entities.size; i++) {
 			
 			// If current entity check is on a player, check user input
-			if(entities.toArray()[i].getId() == 0) {
+			if(entities.toArray()[i] instanceof Player) {
 				entities.toArray()[i].checkInput(new boolean[]{
 						Gdx.input.isKeyPressed(Keys.UP),
 						Gdx.input.isKeyPressed(Keys.DOWN),

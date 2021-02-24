@@ -10,7 +10,7 @@ public class EntityUFO extends Entity {
 	 * @param tex
 	 */
 	public EntityUFO(float scale, int id, Texture tex) {
-		super(scale, id, tex);
+		super(scale, tex);
 		// TODO Auto-generated constructor stub
 	}
 

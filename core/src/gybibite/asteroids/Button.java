@@ -83,7 +83,7 @@ public class Button {
 	 * @param listener Instance of EventListener to be assigned an action
 	 */
 	public Button setClickEvent(EventListener listener) {
-		this.event = listener;
+		event = listener;
 		return this;
 	}
 

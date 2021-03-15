@@ -3,9 +3,7 @@ package gybibite.asteroids;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 
-import gybibite.asteroids.EntityTypes.Asteroid;
-
-public final class EntityAsteroid extends Entity implements Asteroid {
+public final class EntityAsteroid extends Entity {
 
 	int size;
 	Circle hitbox;
@@ -59,8 +57,10 @@ public final class EntityAsteroid extends Entity implements Asteroid {
 	}
 
 	@Override
-	void checkHit() {
-		/* Asteroids don't need collision detection */
+	void notifyHit(Entity e) {
+		if (e instanceof EntityBullet || e instanceof EntityPlayer) {
+			die();
+		}
 	}
 
 	@Override
@@ -119,6 +119,6 @@ public final class EntityAsteroid extends Entity implements Asteroid {
 			new EntityAsteroid(size - 1, x, y);
 			new EntityAsteroid(size - 1, x, y);
 		}
-		this.delete();
+		delete();
 	}
 }

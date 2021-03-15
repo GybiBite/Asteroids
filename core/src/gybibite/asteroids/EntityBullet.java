@@ -1,15 +1,10 @@
 package gybibite.asteroids;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import gybibite.asteroids.EntityTypes.Asteroid;
-import gybibite.asteroids.EntityTypes.Bullet;
-
-public class EntityBullet extends Entity implements Bullet {
+public class EntityBullet extends Entity  {
 
 	Entity pl;
 	float originX;
@@ -44,7 +39,7 @@ public class EntityBullet extends Entity implements Bullet {
 		// If the bullet has been alive as long as BULLET_TIME without hitting anything,
 		// kill the bullet
 		if (TimeUtils.timeSinceMillis(age) >= BULLET_TIME) {
-			this.delete();
+			delete();
 		}
 
 		x += vx * delta;
@@ -67,23 +62,9 @@ public class EntityBullet extends Entity implements Bullet {
 	}
 
 	@Override
-	void checkHit() {
-		for (Entity e : GameUI.getEntities()) {
-			if (e != pl) {
-				if (e instanceof Asteroid) {
-					if (GameUI.overlaps(hitbox, (Circle) e.getHitbox())) {
-						e.die();
-						this.die();
-						break;
-					}
-				} else if (!(e instanceof Bullet)) {
-					if (Intersector.intersectPolygons(hitbox, (Polygon) e.getHitbox(), null)) {
-						e.die();
-						this.die();
-						break;
-					}
-				}
-			}
+	void notifyHit(Entity e) {
+		if (e instanceof EntityAsteroid) {
+			die();
 		}
 	}
 
@@ -102,6 +83,6 @@ public class EntityBullet extends Entity implements Bullet {
 
 	@Override
 	void die() {
-		this.delete();
+		delete();
 	}
 }

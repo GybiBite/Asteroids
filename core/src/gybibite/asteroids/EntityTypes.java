@@ -1,8 +1,6 @@
 package gybibite.asteroids;
 
-final class EntityTypes {
-	protected interface UFO{}
-	protected interface Asteroid{}
-	protected interface Bullet{}
-	protected interface Player{}
+public class EntityTypes {
+	interface Playable{}
+	interface Enemy{}
 }

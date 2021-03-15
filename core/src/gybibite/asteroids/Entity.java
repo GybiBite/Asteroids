@@ -11,6 +11,12 @@ public abstract class Entity {
 	/** Set to true if entity was hit. */
 	protected boolean wasHit;
 	protected Texture tex;
+	
+	/*
+	 * FIXME: Every call to the size-getting methods use a scuffed fix for the
+	 * screen scaling that multiples every "size" by a fixed constant which
+	 * represents the difference between old and new screen size.
+	 */
 	protected Sprite sprite;
 	/** Clones for screen wrapping. */
 	protected Sprite[] clones = new Sprite[8];
@@ -154,8 +160,8 @@ public abstract class Entity {
 	/** Gets the hitbox object of the entity */
 	abstract Object getHitbox();
 
-	/** Checks if the entity has hit another valid entity */
-	abstract void checkHit();
+	/** Called if the entity was hit by another entity */
+	abstract void notifyHit(Entity e);
 
 	/**
 	 * Called when the entity dies (for playing animations, sounds, triggering
@@ -171,6 +177,10 @@ public abstract class Entity {
 				+ "Position: (" + x + ", " + y + ")";
 	}
 
+	/**
+	 * Allows the entity to register key events
+	 * Intended to be overridden by {@link EntityPlayer}
+	 */
 	public void checkInput(boolean[] buttons) {
 		Gdx.app.log("INPUT", "Input can only be checked for a playable entity");
 	}

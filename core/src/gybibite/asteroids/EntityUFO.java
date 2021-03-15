@@ -33,7 +33,7 @@ public class EntityUFO extends Entity {
 	}
 
 	@Override
-	void checkHit() {
+	void notifyHit(Entity e) {
 		// TODO Auto-generated method stub
 
 	}
@@ -41,7 +41,6 @@ public class EntityUFO extends Entity {
 	@Override
 	void die() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 }

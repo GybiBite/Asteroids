@@ -1,13 +1,9 @@
 package gybibite.asteroids;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
 
-import gybibite.asteroids.EntityTypes.Asteroid;
-import gybibite.asteroids.EntityTypes.Player;
-
-public class EntityPlayer extends Entity implements Player {
+public class EntityPlayer extends Entity {
 
 	boolean upPressed, downPressed, leftPressed, rightPressed, firePressed;
 
@@ -100,15 +96,9 @@ public class EntityPlayer extends Entity implements Player {
 	}
 
 	@Override
-	void checkHit() {
-		for (int i = 0; i < GameUI.getEntities().size; i++) { // For every entity in the game
-			if (GameUI.getEntities().items[i] instanceof Asteroid) { // if the entity is an asteroid
-				if (GameUI.overlaps(hitbox, (Circle) GameUI.getEntities().items[i].getHitbox())) { // and hitboxes are colliding
-					GameUI.getEntities().items[i].die();
-					this.die();
-					break;
-				}
-			}
+	void notifyHit(Entity e) {
+		if (e instanceof EntityAsteroid) {
+			die();
 		}
 	}
 
@@ -128,7 +118,7 @@ public class EntityPlayer extends Entity implements Player {
 	@Override
 	void die() {
 		if(!wasHit) {
-			this.delete();
+			delete();
 		}
 	}
 }

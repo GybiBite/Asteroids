@@ -25,21 +25,24 @@ public class CollisionDetector {
 		this.entities = entities;
 	}
 
-	void checkForCollisions() {
-		if (entities.size != 0) {
-			for (int i = 0; i < entities.size; i++) {
-				if (entities.get(i) instanceof EntityAsteroid) {
+	void checkForCollisions()
+	{
+		if (entities.size != 0)
+		{
+			for (int i = 0; i < entities.size; i++)
+			{
+				if (entities.get(i) instanceof EntityAsteroid)
+				{
 					asts.add(entities.get(i));
-				} else {
+				}
+				else
+				{
 					others.add(entities.get(i));
 				}
 			}
-
-			
 			
 			for (Entity o : others) {
 				e1 = o;
-				System.out.println(e1);
 				for (Entity a : asts) {
 					e2 = a;
 					if (overlaps((Polygon) e1.getHitbox(), (Circle) e2.getHitbox())) {

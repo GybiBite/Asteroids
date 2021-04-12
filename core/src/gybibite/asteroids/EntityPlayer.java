@@ -41,58 +41,64 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	public void tick(float delta) {
+		
+		if (!dying) {
+			// Check movement keys
+			if (rightPressed) {
+				rot = (rot - RSPEED) % 360;
+			}
+			if (leftPressed) {
+				rot = (rot + RSPEED) % 360;
+			}
+			if (upPressed) {
+				vy += (float) (Math.cos(Math.toRadians(rot))) * ACCEL;
+				vx -= (float) (Math.sin(Math.toRadians(rot))) * ACCEL;
 
-		// Check movement keys
-		if (rightPressed) {
-			rot = (rot - RSPEED) % 360;
+				vy = Math.min(Math.max(-MAX_SPEED, vy), MAX_SPEED);
+				vx = Math.min(Math.max(-MAX_SPEED, vx), MAX_SPEED);
+
+			} else if (!upPressed) {
+				vy -= vy / DECEL;
+				vx -= vx / DECEL;
+			}
+
+			if (firePressed) {
+				new EntityBullet(2.5f, this);
+			}
+
+			// Prevent velocity from getting infinitely smaller
+			vx = (float) (Math.floor(vx * 10000) / 10000);
+			vy = (float) (Math.floor(vy * 10000) / 10000);
+
+			if (downPressed && Asteroids.isVerbose()) {
+				vy = 0;
+				vx = 0;
+			}
+
+			// Increment position by velocity multiplied by the time since
+			// last frame, for consistent movement
+			x += vx * delta;
+			y += vy * delta;
+
+			if (x <= 0) {
+				x = S_WIDTH;
+			} else if (x >= S_WIDTH) {
+				x = 0;
+			}
+
+			if (y <= 0) {
+				y = S_HEIGHT;
+			} else if (y >= S_HEIGHT) {
+				y = 0;
+			}
+
+			hitbox.setRotation(rot);
+			hitbox.setPosition(x, y);
 		}
-		if (leftPressed) {
-			rot = (rot + RSPEED) % 360;
+		
+		else {
+			
 		}
-		if (upPressed) {
-			vy += (float) (Math.cos(Math.toRadians(rot))) * ACCEL;
-			vx -= (float) (Math.sin(Math.toRadians(rot))) * ACCEL;
-
-			vy = Math.min(Math.max(-MAX_SPEED, vy), MAX_SPEED);
-			vx = Math.min(Math.max(-MAX_SPEED, vx), MAX_SPEED);
-
-		} else if (!upPressed) {
-			vy -= vy / DECEL;
-			vx -= vx / DECEL;
-		}
-
-		if (firePressed) {
-			new EntityBullet(2.5f, this);
-		}
-
-		// Prevent velocity from getting infinitely smaller
-		vx = (float) (Math.floor(vx * 10000) / 10000);
-		vy = (float) (Math.floor(vy * 10000) / 10000);
-
-		if (downPressed && Asteroids.isVerbose()) {
-			vy = 0;
-			vx = 0;
-		}
-
-		// Increment position by velocity multiplied by the time since
-		// last frame, for consistent movement
-		x += vx * delta;
-		y += vy * delta;
-
-		if (x <= 0) {
-			x = S_WIDTH;
-		} else if (x >= S_WIDTH) {
-			x = 0;
-		}
-
-		if (y <= 0) {
-			y = S_HEIGHT;
-		} else if (y >= S_HEIGHT) {
-			y = 0;
-		}
-
-		hitbox.setRotation(rot);
-		hitbox.setPosition(x, y);
 	}
 
 	@Override
@@ -117,8 +123,6 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	void die() {
-		if(!wasHit) {
-			delete();
-		}
+		dying = true;
 	}
 }

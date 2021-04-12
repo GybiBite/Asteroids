@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Polygon;
 public abstract class Entity {
 	
 	/** Set to true if entity was hit. */
-	protected boolean wasHit;
+	protected boolean dying;
 	protected Texture tex;
 	
 	/*

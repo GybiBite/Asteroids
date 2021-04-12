@@ -77,14 +77,6 @@ public class GameUI extends ScreenAdapter {
 			}
 			Gdx.app.log("ENTITYLIST", "===== END OF FRAME =====");
 		}
-
-		if (TimeUtils.timeSinceMillis(timeLast) > SPAWN_TIME) {
-			timeLast = TimeUtils.millis();
-
-			new EntityAsteroid(rand.nextInt(3), rand.nextInt(640), rand.nextInt(480));
-			new EntityAsteroid(rand.nextInt(3), rand.nextInt(640), rand.nextInt(480));
-			new EntityAsteroid(rand.nextInt(3), rand.nextInt(640), rand.nextInt(480));
-		}
 	}
 
 	@Override

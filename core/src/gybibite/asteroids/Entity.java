@@ -2,8 +2,10 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
 
 public abstract class Entity {
@@ -20,6 +22,8 @@ public abstract class Entity {
 	protected Sprite sprite;
 	/** Clones for screen wrapping. */
 	protected Sprite[] clones = new Sprite[8];
+	/** Death animation frames for entity */
+	protected Animation<TextureRegion> deathAnim;
 	/** Polygon object for controlling the hitbox. */
 	protected Polygon hitbox;
 	/** Constants for window size. */

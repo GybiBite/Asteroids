@@ -5,13 +5,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
+
+interface Enemy{}
 
 public abstract class Entity {
 	
 	/** Set to true if entity was hit. */
 	protected boolean dying;
+	protected long deathTimer;
 	protected Texture tex;
 	
 	/*
@@ -24,12 +28,13 @@ public abstract class Entity {
 	protected Sprite[] clones = new Sprite[8];
 	/** Death animation frames for entity */
 	protected Animation<TextureRegion> deathAnim;
+	protected TextureAtlas atlas;
 	/** Polygon object for controlling the hitbox. */
 	protected Polygon hitbox;
 	/** Constants for window size. */
 	protected static final int S_WIDTH = Asteroids.S_WIDTH;
 	protected static final int S_HEIGHT = Asteroids.S_HEIGHT;
-	/** Positional variables */
+	/* Positional variables */
 	float x;
 	float y;
 	float vx;
@@ -147,6 +152,7 @@ public abstract class Entity {
 	 */
 	public void dispose() {
 		tex.dispose();
+//		atlas.dispose();
 	}
 
 	/** Removes the entity when necessary */
@@ -176,13 +182,14 @@ public abstract class Entity {
 	/** Some verbose stuff */
 	@Override
 	public String toString() {
-		return "-----------------" + "\n" + "Entity: " + this.getClass().getSimpleName() + " at "
-				+ GameUI.entities.indexOf(this, true) + "\n" + "Velocity: (" + vx + ", " + vy + ")" + "\n"
-				+ "Position: (" + x + ", " + y + ")";
+		return "-----------------" + "\n" +
+				"Entity: " + this.getClass().getSimpleName() + " at " + GameUI.entities.indexOf(this, true) + "\n" +
+				"Velocity: (" + vx + ", " + vy + ")" + "\n" +
+				"Position: (" + x + ", " + y + ")";
 	}
 
 	/**
-	 * Allows the entity to register key events
+	 * Allows the entity to register key events<br>
 	 * Intended to be overridden by {@link EntityPlayer}
 	 */
 	public void checkInput(boolean[] buttons) {

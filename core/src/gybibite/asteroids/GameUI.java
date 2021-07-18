@@ -20,7 +20,9 @@ public class GameUI extends ScreenAdapter {
 	Asteroids g;
 	static Array<Entity> entities = new Array<>(new Entity[0]);
 
-	private static final int SPAWN_TIME = 5000;
+	private static final int NEXTLVL_DELAY = 0;
+	private int level = 0;
+	private boolean enemiesStillAlive;
 
 	private long timeLast;
 	Random rand = new Random();
@@ -39,6 +41,7 @@ public class GameUI extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
+		enemiesStillAlive = false;
 		/*
 		 * Because of an apparent bug with iterators, this has to be a classic
 		 * "for loop" and not "Object o : Array"
@@ -46,7 +49,6 @@ public class GameUI extends ScreenAdapter {
 		 * PS: iterators are awful :)
 		 */
 		for (int i = 0; i < entities.size; i++) {
-			
 			// If current entity check is on a player, check user input
 			if(entities.toArray()[i] instanceof EntityPlayer) {
 				entities.toArray()[i].checkInput(new boolean[]{
@@ -54,7 +56,12 @@ public class GameUI extends ScreenAdapter {
 						Gdx.input.isKeyPressed(Keys.DOWN),
 						Gdx.input.isKeyPressed(Keys.LEFT),
 						Gdx.input.isKeyPressed(Keys.RIGHT),
-						Gdx.input.isButtonJustPressed(Buttons.LEFT)});
+						Gdx.input.isButtonJustPressed(Buttons.LEFT),
+						Gdx.input.isKeyJustPressed(Keys.ALT_LEFT)});
+			}
+			// If current entity is considered an Enemy, tell the game enemies are still alive
+			if(entities.toArray()[i] instanceof Enemy) {
+				enemiesStillAlive = true;
 			}
 		}
 
@@ -72,7 +79,7 @@ public class GameUI extends ScreenAdapter {
 				s.begin(ShapeType.Line); // Begin the shape renderer for type Line
 				Gdx.gl.glLineWidth(1);
 				s.setColor(1, 1, 0, 1); // Set the line color to yellow
-				e.drawHB(); // Draw the polygon representing the polygon
+//				e.drawHB(); // Draw the polygon representing the polygon
 				s.end(); // End the shape renderer
 			}
 			Gdx.app.log("ENTITYLIST", "===== END OF FRAME =====");

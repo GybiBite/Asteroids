@@ -1,11 +1,17 @@
 package gybibite.asteroids;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class EntityPlayer extends Entity {
 
-	boolean upPressed, downPressed, leftPressed, rightPressed, firePressed;
+	boolean upPressed, downPressed, leftPressed, rightPressed, firePressed, diePressed;
 
 	static final float ACCEL = 6f;
 	static final float DECEL = 100f; // Lower is quicker decel (divisor of velocity)
@@ -25,6 +31,9 @@ public class EntityPlayer extends Entity {
 		this.player = player;
 
 		setHitbox();
+		
+		atlas = new TextureAtlas(Gdx.files.internal("R:\\astr\\Asteroids\\core\\assets\\ship_death.pack"));
+		deathAnim = new Animation<TextureRegion>(0.05f, atlas.getRegions(), Animation.PlayMode.NORMAL);
 	}
 
 	@Override
@@ -36,11 +45,13 @@ public class EntityPlayer extends Entity {
 			leftPressed = buttons[2];
 			rightPressed = buttons[3];
 			firePressed = buttons[4];
+			diePressed = buttons[5];
 		}
 	}
 
 	@Override
 	public void tick(float delta) {
+		
 		
 		if (!dying) {
 			// Check movement keys
@@ -94,16 +105,24 @@ public class EntityPlayer extends Entity {
 
 			hitbox.setRotation(rot);
 			hitbox.setPosition(x, y);
+			
+			if(diePressed) die();
 		}
 		
 		else {
+			sprite.setRegion(deathAnim.getKeyFrame(TimeUtils.timeSinceMillis(deathTimer) / 1000f));
 			
+			if(deathAnim.isAnimationFinished(TimeUtils.timeSinceMillis(deathTimer) / 1000f)) {
+				delete();
+			}
 		}
+		
+		
 	}
 
 	@Override
 	void notifyHit(Entity e) {
-		if (e instanceof EntityAsteroid) {
+		if (e instanceof EntityAsteroid && !dying) {
 			die();
 		}
 	}
@@ -123,6 +142,7 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	void die() {
+		deathTimer = TimeUtils.millis();
 		dying = true;
 	}
 }

@@ -2,7 +2,7 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class EntityUFO extends Entity {
+public class EntityUFO extends Entity implements Enemy {
 
 	/**
 	 * @param scale

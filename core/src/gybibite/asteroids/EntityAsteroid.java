@@ -3,7 +3,7 @@ package gybibite.asteroids;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 
-public final class EntityAsteroid extends Entity {
+public final class EntityAsteroid extends Entity implements Enemy {
 
 	int size;
 	Circle hitbox;

@@ -70,7 +70,7 @@ public class Button {
 				y - height / 2, x - width / 2, y - height / 2 };
 		gly.setText(font, label);
 
-		font.getData().setScale(Math.min(((float) (width * 0.8) / gly.width), (float) (height * 0.75) / gly.height));
+		font.getData().setScale(Math.min(((float) (width * 0.8) / gly.width), (float) (height * 0.4) / gly.height));
 	}
 
 	/**

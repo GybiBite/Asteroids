@@ -53,6 +53,9 @@ public class Asteroids extends Game {
 		case 1:
 			setScreen(game);
 			break;
+		case 2:
+			// TODO setScreen(options);
+			break;
 		default:
 			setScreen(menu);
 		}

@@ -140,7 +140,7 @@ public abstract class Entity {
 		}
 	}
 
-	/** Tells the main class to draw the hitbox to the screen */
+	/** Tells the game UI to draw the hitbox to the screen */
 	void drawHB() {
 		GameUI.drawPoly(hitbox.getTransformedVertices());
 	}
@@ -161,7 +161,7 @@ public abstract class Entity {
 		dispose();
 	}
 
-	/** Defines how the entity interacts with the world every server cycle */
+	/** Defines how the entity interacts with the world every game cycle */
 	abstract void tick(float delta);
 
 	/** Sets the hitbox vertices */

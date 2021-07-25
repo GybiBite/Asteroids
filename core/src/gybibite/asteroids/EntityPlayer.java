@@ -1,12 +1,12 @@
 package gybibite.asteroids;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class EntityPlayer extends Entity {
@@ -22,6 +22,8 @@ public class EntityPlayer extends Entity {
 	/** Which player the current entity is (1, 2, etc..) */
 	final int player;
 
+	final ParticleEmitter emitter;
+
 	EntityPlayer(float scale, int player) {
 		super(scale, new Texture("ship.png"));
 
@@ -31,9 +33,11 @@ public class EntityPlayer extends Entity {
 		this.player = player;
 
 		setHitbox();
-		
+
 		atlas = new TextureAtlas(Gdx.files.internal("R:\\astr\\Asteroids\\core\\assets\\ship_death.pack"));
 		deathAnim = new Animation<TextureRegion>(0.05f, atlas.getRegions(), Animation.PlayMode.NORMAL);
+
+		this.emitter = new ParticleEmitter(2.5f, new Color(0.98f, 0.686f, 0.05f, 1f), 45f, 0f, 150f, 50f);
 	}
 
 	@Override
@@ -51,8 +55,7 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	public void tick(float delta) {
-		
-		
+
 		if (!dying) {
 			// Check movement keys
 			if (rightPressed) {
@@ -67,6 +70,8 @@ public class EntityPlayer extends Entity {
 
 				vy = Math.min(Math.max(-MAX_SPEED, vy), MAX_SPEED);
 				vx = Math.min(Math.max(-MAX_SPEED, vx), MAX_SPEED);
+
+				emitter.emit(x, y, -rot, 4);
 
 			} else if (!upPressed) {
 				vy -= vy / DECEL;
@@ -105,19 +110,22 @@ public class EntityPlayer extends Entity {
 
 			hitbox.setRotation(rot);
 			hitbox.setPosition(x, y);
-			
-			if(diePressed) die();
+
+			if (diePressed)
+				die();
 		}
-		
+
 		else {
+
 			sprite.setRegion(deathAnim.getKeyFrame(TimeUtils.timeSinceMillis(deathTimer) / 1000f));
-			
-			if(deathAnim.isAnimationFinished(TimeUtils.timeSinceMillis(deathTimer) / 1000f)) {
+
+			x += vx * delta;
+			y += vy * delta;
+
+			if (deathAnim.isAnimationFinished(TimeUtils.timeSinceMillis(deathTimer) / 1000f)) {
 				delete();
 			}
 		}
-		
-		
 	}
 
 	@Override
@@ -144,5 +152,9 @@ public class EntityPlayer extends Entity {
 	void die() {
 		deathTimer = TimeUtils.millis();
 		dying = true;
+		vx /= 2;
+		vy /= 2;
+		sprite.setScale(sprite.getScaleX() * 1.875f);
+		sprite.setRegion(deathAnim.getKeyFrame(TimeUtils.timeSinceMillis(deathTimer) / 1000f));
 	}
 }

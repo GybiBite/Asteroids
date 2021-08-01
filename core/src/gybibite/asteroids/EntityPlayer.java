@@ -34,10 +34,10 @@ public class EntityPlayer extends Entity {
 
 		setHitbox();
 
-		atlas = new TextureAtlas(Gdx.files.internal("R:\\astr\\Asteroids\\core\\assets\\ship_death.pack"));
+		atlas = new TextureAtlas(Gdx.files.internal("ship_death.pack"));
 		deathAnim = new Animation<TextureRegion>(0.05f, atlas.getRegions(), Animation.PlayMode.NORMAL);
 
-		this.emitter = new ParticleEmitter(2.5f, new Color(0.98f, 0.686f, 0.05f, 1f), 45f, 0f, 150f, 50f);
+		this.emitter = new ParticleEmitter(2.5f, new Color(0.98f, 0.686f, 0.05f, 1f), 90f, 0f, 250f, 50f);
 	}
 
 	@Override
@@ -70,8 +70,10 @@ public class EntityPlayer extends Entity {
 
 				vy = Math.min(Math.max(-MAX_SPEED, vy), MAX_SPEED);
 				vx = Math.min(Math.max(-MAX_SPEED, vx), MAX_SPEED);
+				
+				double[] thrustPos = getThrustorPos();
 
-				emitter.emit(x, y, -rot, 4);
+				emitter.emit((float)thrustPos[0], (float)thrustPos[1], -rot, 2);
 
 			} else if (!upPressed) {
 				vy -= vy / DECEL;
@@ -86,7 +88,7 @@ public class EntityPlayer extends Entity {
 			vx = (float) (Math.floor(vx * 10000) / 10000);
 			vy = (float) (Math.floor(vy * 10000) / 10000);
 
-			if (downPressed && Asteroids.isVerbose()) {
+			if (downPressed && Asteroids.isDebug()) {
 				vy = 0;
 				vx = 0;
 			}
@@ -127,6 +129,10 @@ public class EntityPlayer extends Entity {
 			}
 		}
 	}
+	
+	double[] getThrustorPos() {
+		return new double[] { hitbox.getTransformedVertices()[4], hitbox.getTransformedVertices()[5] };
+	}
 
 	@Override
 	void notifyHit(Entity e) {
@@ -137,8 +143,10 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	void setHitbox() {
-		hb = new float[] { 0, sprite.getHeight() / 1.3f, sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f, 0,
-				-sprite.getHeight() / 1.3f, -sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f };
+		hb = new float[] { 0, sprite.getHeight() / 1.3f,
+				sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f,
+				0, -sprite.getHeight() / 1.3f,
+				-sprite.getWidth() / 1.3f, -sprite.getHeight() / 2.6f };
 
 		hitbox = new Polygon(hb);
 	}

@@ -45,7 +45,5 @@ public class MenuUI extends ScreenAdapter {
 	public void dispose() {
 		// TODO Auto-generated method stub
 
-	}
-	
-	
+	}	
 }

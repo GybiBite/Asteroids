@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class ParticleEmitter {
@@ -49,14 +50,17 @@ public class ParticleEmitter {
 		rand = new Random();
 	}
 
-	/*
-	 * ParticleEmitter(float x, float y, float size, Texture tex, float angle, float
-	 * angleVar, float spawnRange, float lifetime, float lifeVar){ this.spawnX = x;
-	 * this.spawnY = y; this.size = size; this.tex = tex; this.angle =
-	 * MathUtils.clamp(angle, -360, 360); this.angleVar = angleVar; this.spawnRange
-	 * = spawnRange; this.lifetime = lifetime; this.lifeVar = lifeVar; rand = new
-	 * Random(); }
-	 */
+	
+	ParticleEmitter(float size, Texture tex, float angleVar, float spawnRange, float lifetime, float lifeVar) {
+		this.size = size;
+		this.tex = tex;
+		this.angleVar = angleVar;
+		this.spawnRange = spawnRange;
+		this.lifetime = lifetime;
+		this.lifeVar = lifeVar;
+		rand = new Random();
+	}
+	 
 
 	/**
 	 * Creates a new particle object to be displayed on screen
@@ -77,8 +81,7 @@ public class ParticleEmitter {
 		float xOffset = (float) Math.random() * spawnRange * xOffsetSign;
 		float yOffset = (float) Math.random() * spawnRange * yOffsetSign;
 
-		GameUI.addParticle(
-				new Particle(x + xOffset, y + yOffset, angle + angleOffset, speed, lifetime + lifeOffset, color, size));
+		GameUI.addParticle(new Particle(x + xOffset, y + yOffset, angle + angleOffset, speed, lifetime + lifeOffset, color, size));
 	}
 
 	class Particle {
@@ -104,15 +107,18 @@ public class ParticleEmitter {
 
 		void tick(ShapeRenderer s) {
 
+			/* If the particle's life timer has exceeded its allowed lifetime, remove it */
 			if (TimeUtils.timeSinceMillis(lifeTimer) >= lifetime) {
 				GameUI.destroyParticle(this);
 			}
 
+			/* Draw the particle */
 			s.begin(ShapeType.Filled);
 			s.setColor(color);
 			s.rect(x, y, size, size);
 			s.end();
 
+			/* Move the particle to its next position */
 			x -= (float) (Math.sin(Math.toRadians(angle))) * speed;
 			y -= (float) (Math.cos(Math.toRadians(angle))) * speed;
 		}

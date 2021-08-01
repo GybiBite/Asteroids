@@ -10,15 +10,15 @@ public class Asteroids extends Game {
 	public static final int S_WIDTH = 800;
 	public static final int S_HEIGHT = 600;
 
-	static boolean verbose;
+	static boolean debug;
 
 	static ScreenAdapter menu, game;
 
 	// This is just here to parse arguments
 	public Asteroids(String[] arg) {
 		for (int i = 0; i < arg.length; i++) {
-			if (arg[i].contentEquals("-v")) { // Handle verbose argument (shows some debug info)
-				verbose = true;
+			if (arg[i].contentEquals("-d")) { // Handle verbose argument (shows some debug info)
+				debug = true;
 			}
 		}
 	}
@@ -26,7 +26,7 @@ public class Asteroids extends Game {
 	@Override
 	public void create() {
 		Gdx.graphics.setWindowedMode(800, 600);
-		Gdx.graphics.setResizable(false);
+		Gdx.graphics.setResizable(true);
 		menu = new MenuUI(this);
 		game = new GameUI(this);
 
@@ -39,7 +39,7 @@ public class Asteroids extends Game {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear the screen
 		super.render(); // Make sure that the active screen renders
 
-		if (verbose) {
+		if (debug) {
 			// Write FPS to the window's title bar
 			Gdx.graphics.setTitle("Asteroids - FPS: " + Math.floor(1 / Gdx.graphics.getDeltaTime() * 10) / 10);
 		}
@@ -66,7 +66,7 @@ public class Asteroids extends Game {
 		// There's nothing to dispose of in this class.
 	}
 
-	public static boolean isVerbose() {
-		return verbose;
+	public static boolean isDebug() {
+		return debug;
 	}
 }

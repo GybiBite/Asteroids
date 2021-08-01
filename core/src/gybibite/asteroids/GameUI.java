@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameUI extends ScreenAdapter {
 	
@@ -21,13 +22,15 @@ public class GameUI extends ScreenAdapter {
 	static Array<Entity> entities = new Array<>(new Entity[0]);
 	static Array<Particle> particles = new Array<>(new Particle[0]);
 
-	private static final int NEXTLVL_DELAY = 0;
+	private final int NEXTLVL_DELAY = 3000;
+	int nextLvlTimer = -1;
 	private int level = 0;
-	private boolean enemiesStillAlive;
+	private boolean enemiesStillAlive, playerStillAlive;
 
 	private long timeLast;
 	Random rand = new Random();
-	CollisionDetector collide = new CollisionDetector(entities);
+	static CollisionDetector collide = new CollisionDetector(entities);
+	EntityPlayer playerOne;
 
 	GameUI(Asteroids g){
 		this.g = g;
@@ -42,43 +45,15 @@ public class GameUI extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
-		enemiesStillAlive = false;
-		/*
-		 * Because of an apparent bug with iterators, this has to be a classic
-		 * "for loop" and not "Object o : Array"
-		 * 
-		 * PS: iterators are awful :)
-		 */
-		for (int i = 0; i < entities.size; i++) {
-			// If current entity check is on a player, check user input
-			if(entities.toArray()[i] instanceof EntityPlayer) {
-				entities.toArray()[i].checkInput(new boolean[]{
-						Gdx.input.isKeyPressed(Keys.UP),
-						Gdx.input.isKeyPressed(Keys.DOWN),
-						Gdx.input.isKeyPressed(Keys.LEFT),
-						Gdx.input.isKeyPressed(Keys.RIGHT),
-						Gdx.input.isButtonJustPressed(Buttons.LEFT),
-						Gdx.input.isKeyJustPressed(Keys.ALT_RIGHT)});
-			}
-			// If current entity is considered an Enemy, tell the game enemies are still alive
-			if(entities.toArray()[i] instanceof Enemy) {
-				enemiesStillAlive = true;
-			}
-		}
-		
-		for (Particle p : particles) {
-			p.tick(s);
-		}
+		tick(delta);
 
 		batch.begin(); // Begins the sprite batch. Required for libGDX
-		for (Entity e : entities) {
-			e.tick(delta);
-			collide.checkForCollisions();
+		for (Entity e : entities) {			
 			e.render(batch);
 		}
 		batch.end(); // Ends the sprite batch. Required for libGDX
-
-		if (Asteroids.isVerbose()) {
+		
+		if (Asteroids.isDebug()) {
 			for (Entity e : entities) {
 				Gdx.app.log("ENTITYLIST", e.toString()); // Print entity info
 				s.begin(ShapeType.Line); // Begin the shape renderer for type Line
@@ -88,6 +63,64 @@ public class GameUI extends ScreenAdapter {
 				s.end(); // End the shape renderer
 			}
 			Gdx.app.log("ENTITYLIST", "===== END OF FRAME =====");
+		}
+	}
+	
+	public void tick(float delta) {
+		enemiesStillAlive = playerStillAlive = false;
+		/*
+		 * Because of an apparent bug with iterators, this has to be a classic
+		 * "for loop" and not "Object o : Array"
+		 * 
+		 * PS: iterators are awful :)
+		 */
+		for (int i = 0; i < entities.size; i++) {
+			// If current entity check is on a player, check user input
+			if(entities.toArray()[i] instanceof EntityPlayer) {
+				playerOne = (EntityPlayer) entities.toArray()[i];
+				entities.toArray()[i].checkInput(new boolean[]{
+				/*0*/	Gdx.input.isKeyPressed(Keys.UP),
+				/*1*/	Gdx.input.isKeyPressed(Keys.DOWN),
+				/*2*/	Gdx.input.isKeyPressed(Keys.LEFT),
+				/*3*/	Gdx.input.isKeyPressed(Keys.RIGHT),
+				/*4*/	Gdx.input.isButtonJustPressed(Buttons.LEFT),
+				/*5*/	Gdx.input.isKeyJustPressed(Keys.ALT_RIGHT)});
+				
+				playerStillAlive = true;
+			}
+			// If current entity is considered an Enemy, tell the game enemies are still alive
+			if(entities.toArray()[i] instanceof Enemy) {
+				enemiesStillAlive = true;
+			}
+		}
+		
+		for(Particle p : particles) {
+			p.tick(s);
+		}
+		for(Entity e : entities) {
+			e.tick(delta);
+			collide.checkForCollisions();
+		}
+		
+		if(!enemiesStillAlive) {
+			if(nextLvlTimer == -1) {
+				nextLvlTimer = NEXTLVL_DELAY;
+			} else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
+				nextLvlTimer = -1;
+				new EntityAsteroid(2, 200, 200);
+				new EntityAsteroid(2, 200, 200);
+			}
+		}
+		
+		if(!playerStillAlive) {
+			if(nextLvlTimer == -1) {
+				nextLvlTimer = NEXTLVL_DELAY;
+			} else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
+				nextLvlTimer = -1;
+				entities.clear();
+				particles.clear();
+				g.switchScreen(0);
+			}
 		}
 	}
 

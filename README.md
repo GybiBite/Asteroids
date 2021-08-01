@@ -24,7 +24,7 @@ Sure! Also, I would love feedback on it, however, at the time of writing this, t
 
 ### Flags:
 
-*   `-v`: Debug mode (shows hitboxes, logs all entities in console, allows "stop moving" key)
+*   `-d`: Debug mode (shows hitboxes, logs all entities in console, allows "stop moving" key)
 
 ## How can I provide feedback about the project?
 

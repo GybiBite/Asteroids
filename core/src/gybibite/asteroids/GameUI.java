@@ -7,10 +7,15 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
 import gybibite.asteroids.ParticleEmitter.Particle;
+
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -19,28 +24,54 @@ public class GameUI extends ScreenAdapter {
 	static SpriteBatch batch;
 	static ShapeRenderer s;
 	Asteroids g;
-	static Array<Entity> entities = new Array<>(new Entity[0]);
-	static Array<Particle> particles = new Array<>(new Particle[0]);
+	static Array<Entity> entities = new Array<Entity>(new Entity[0]);
+	static Array<Particle> particles = new Array<Particle>(new Particle[0]);
+	
+	private GlyphLayout gly = new GlyphLayout();
+	private final BitmapFont font = new BitmapFont(Gdx.files.internal("fsex300.fnt"),
+			Gdx.files.internal("fsex300.png"), false);
+	
+	/** Stores every sprite that will just be a static play on the screen to indicate a life */
+	static Sprite[] livesDisp = new Sprite[10]; // This size can be modified to change max amount of "lives" shown.
 
 	private final int NEXTLVL_DELAY = 3000;
-	int nextLvlTimer = -1;
+	long nextLvlTimer = -1;
 	private int level = 0;
+	static int score;
 	private boolean enemiesStillAlive, playerStillAlive;
 
-	private long timeLast;
 	Random rand = new Random();
 	static CollisionDetector collide = new CollisionDetector(entities);
 	EntityPlayer playerOne;
+	
+	/** Amount of remaining lives (or "respawns") for the player */
+	public int lives = 0;
 
 	GameUI(Asteroids g){
 		this.g = g;
+		gly.setText(font, ""+score);
+		
+		font.setColor(1, 1, 1, 1);
+		
+		font.getData().setScale(0.25f);
 	}
 	
 	@Override
 	public void show() {
+		lives = 2;
+		score = 0;
 		batch = new SpriteBatch();
 		s = new ShapeRenderer();
 		new EntityPlayer(1.875f, 1); // Creates a new player (ship), while passing the sprite batch so it can render
+		
+		for (int i = 0; i < livesDisp.length; i++) {
+			livesDisp[i] = new Sprite(Asteroids.shipTex);
+			livesDisp[i].setScale(1.2f);
+			
+			livesDisp[i].setPosition(30 + (i * 20), Asteroids.S_HEIGHT - 50);
+			livesDisp[i].setRotation(-45);
+		}
+		
 	}
 
 	@Override
@@ -50,6 +81,12 @@ public class GameUI extends ScreenAdapter {
 		batch.begin(); // Begins the sprite batch. Required for libGDX
 		for (Entity e : entities) {			
 			e.render(batch);
+		}
+		
+		font.draw(batch, (""+score), 30, Asteroids.S_HEIGHT - 60, 2, Align.left, false);
+		
+		for(int i = 0; i < lives; i++) {
+			livesDisp[i].draw(batch);
 		}
 		batch.end(); // Ends the sprite batch. Required for libGDX
 		
@@ -77,12 +114,15 @@ public class GameUI extends ScreenAdapter {
 		for (int i = 0; i < entities.size; i++) {
 			// If current entity check is on a player, check user input
 			if(entities.toArray()[i] instanceof EntityPlayer) {
-				playerOne = (EntityPlayer) entities.toArray()[i];
+				if(playerOne == null) {
+					playerOne = (EntityPlayer) entities.toArray()[i];
+				}
+				
 				entities.toArray()[i].checkInput(new boolean[]{
-				/*0*/	Gdx.input.isKeyPressed(Keys.UP),
-				/*1*/	Gdx.input.isKeyPressed(Keys.DOWN),
-				/*2*/	Gdx.input.isKeyPressed(Keys.LEFT),
-				/*3*/	Gdx.input.isKeyPressed(Keys.RIGHT),
+				/*0*/	Gdx.input.isKeyPressed(Keys.UP)    || Gdx.input.isKeyPressed(Keys.W),
+				/*1*/	Gdx.input.isKeyPressed(Keys.DOWN)  || Gdx.input.isKeyPressed(Keys.S),
+				/*2*/	Gdx.input.isKeyPressed(Keys.LEFT)  || Gdx.input.isKeyPressed(Keys.A),
+				/*3*/	Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D),
 				/*4*/	Gdx.input.isButtonJustPressed(Buttons.LEFT),
 				/*5*/	Gdx.input.isKeyJustPressed(Keys.ALT_RIGHT)});
 				
@@ -102,24 +142,27 @@ public class GameUI extends ScreenAdapter {
 			collide.checkForCollisions();
 		}
 		
-		if(!enemiesStillAlive) {
-			if(nextLvlTimer == -1) {
-				nextLvlTimer = NEXTLVL_DELAY;
+		if (!playerStillAlive) {
+			if (nextLvlTimer == -1) {
+				nextLvlTimer = TimeUtils.millis();
 			} else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
 				nextLvlTimer = -1;
-				new EntityAsteroid(2, 200, 200);
-				new EntityAsteroid(2, 200, 200);
+				if (lives > 0) {
+					lives--;
+					new EntityPlayer(1.875f, 1);
+				} else {
+					entities.clear();
+					particles.clear();
+					g.switchScreen(0);
+				}
 			}
-		}
-		
-		if(!playerStillAlive) {
+		} else if (!enemiesStillAlive) {
 			if(nextLvlTimer == -1) {
-				nextLvlTimer = NEXTLVL_DELAY;
+				nextLvlTimer = TimeUtils.millis();
 			} else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
 				nextLvlTimer = -1;
-				entities.clear();
-				particles.clear();
-				g.switchScreen(0);
+				new EntityAsteroid(2, 200, 200);
+				new EntityAsteroid(2, 200, 200);
 			}
 		}
 	}

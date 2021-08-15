@@ -119,6 +119,8 @@ public class Button {
 	/**
 	 * Checks if the mouse is hovering over the button to highlight it, and
 	 * subsequently checks for a mouse click.
+	 * 
+	 * FIXME: Buttons don't support screen resizing
 	 */
 	public void checkHover(int mouseX, int mouseY, boolean mouseClicked) {
 		highlighted = false;

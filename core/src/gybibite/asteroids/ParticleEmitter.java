@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class ParticleEmitter {
@@ -50,7 +48,16 @@ public class ParticleEmitter {
 		rand = new Random();
 	}
 
-	
+	/**
+	 * [unused]
+	 * 
+	 * @param size
+	 * @param tex
+	 * @param angleVar
+	 * @param spawnRange
+	 * @param lifetime
+	 * @param lifeVar
+	 */
 	ParticleEmitter(float size, Texture tex, float angleVar, float spawnRange, float lifetime, float lifeVar) {
 		this.size = size;
 		this.tex = tex;

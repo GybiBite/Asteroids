@@ -4,11 +4,18 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Asteroids extends Game {
 
 	public static final int S_WIDTH = 800;
 	public static final int S_HEIGHT = 600;
+	
+	public static Texture shipTex;
+	public static Texture bulletTex;
+	public static Texture astTexSmall;
+	public static Texture astTexMed;
+	public static Texture astTexLarge;
 
 	static boolean debug;
 
@@ -17,7 +24,7 @@ public class Asteroids extends Game {
 	// This is just here to parse arguments
 	public Asteroids(String[] arg) {
 		for (int i = 0; i < arg.length; i++) {
-			if (arg[i].contentEquals("-d")) { // Handle verbose argument (shows some debug info)
+			if (arg[i].contentEquals("-d") || arg[i].contentEquals("--debug")) { // Handle debug argument
 				debug = true;
 			}
 		}
@@ -26,9 +33,15 @@ public class Asteroids extends Game {
 	@Override
 	public void create() {
 		Gdx.graphics.setWindowedMode(800, 600);
-		Gdx.graphics.setResizable(true);
+		Gdx.graphics.setResizable(false);
 		menu = new MenuUI(this);
 		game = new GameUI(this);
+		
+		shipTex = new Texture("ship.png");
+		bulletTex = new Texture("bullet.png");
+		astTexSmall = new Texture("asteroid_small.png");
+		astTexMed = new Texture("asteroid_medium.png");
+		astTexLarge = new Texture("asteroid_large.png");
 
 		setScreen(menu);
 	}

@@ -151,8 +151,7 @@ public abstract class Entity {
 	 * @see com.badlogic.gdx.utils#Disposable
 	 */
 	public void dispose() {
-		tex.dispose();
-//		atlas.dispose();
+//		tex.dispose();
 	}
 
 	/** Removes the entity when necessary */
@@ -179,7 +178,7 @@ public abstract class Entity {
 	 */
 	abstract void die();
 
-	/** Some verbose stuff */
+	/** Some debug stuff */
 	@Override
 	public String toString() {
 		return "-----------------" + "\n" +

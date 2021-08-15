@@ -1,6 +1,5 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -17,7 +16,7 @@ public class EntityBullet extends Entity  {
 	long age;
 
 	public EntityBullet(float scale, Entity pl) {
-		super(scale, new Texture("bullet.png"));
+		super(scale, Asteroids.bulletTex);
 		this.pl = pl;
 		this.originX = pl.getX();
 		this.originY = pl.getY();

@@ -1,5 +1,6 @@
 package gybibite.asteroids;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
 
@@ -9,6 +10,7 @@ public final class EntityAsteroid extends Entity implements Enemy {
 	Circle hitbox;
 	Circle[] cloneHitbox = new Circle[8];
 	double rotSpeed;
+	final ParticleEmitter deathPieces;
 
 	public EntityAsteroid(int size, float x, float y) {
 		super(setScale(size), setTexture(size));
@@ -22,12 +24,14 @@ public final class EntityAsteroid extends Entity implements Enemy {
 		rot = (float) ((speed * 720) - 360);
 		rotSpeed = speed * 2;
 
-		speed *= 100;
+		speed *= 200 - ((size - 1) * 20);
 
 		vy += (float) (Math.cos(Math.toRadians(rot))) * speed;
 		vx -= (float) (Math.sin(Math.toRadians(rot))) * speed;
 
 		setHitbox();
+		
+		this.deathPieces = new ParticleEmitter(size + 3, new Color(0.66f, 0.66f, 0.66f, 1f), 359f, 7f, 1000f, 100f);
 	}
 
 	@Override
@@ -90,13 +94,13 @@ public final class EntityAsteroid extends Entity implements Enemy {
 	static Texture setTexture(int size) {
 		switch (size) {
 		case 0:
-			return new Texture("asteroid_small.png");
+			return Asteroids.astTexSmall;
 		case 1:
-			return new Texture("asteroid.png");
+			return Asteroids.astTexMed;
 		case 2:
-			return new Texture("asteroid_large.png");
+			return Asteroids.astTexLarge;
 		default:
-			return new Texture("asteroid.png");
+			return Asteroids.astTexMed;
 		}
 	}
 
@@ -119,6 +123,12 @@ public final class EntityAsteroid extends Entity implements Enemy {
 			new EntityAsteroid(size - 1, x, y);
 			new EntityAsteroid(size - 1, x, y);
 		}
+		for (int i = 0; i < 8/*amount of death particles to emit*/; i++) {
+			deathPieces.emit(x, y, 0, 0.2f);
+		}
+		
+		GameUI.score += 25 * (3 - size);
+		
 		delete();
 	}
 }

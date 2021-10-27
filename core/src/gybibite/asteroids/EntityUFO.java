@@ -1,46 +1,56 @@
 package gybibite.asteroids;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Polygon;
 
-public class EntityUFO extends Entity implements Enemy {
+public final class EntityUFO extends Entity implements Enemy {
+  
+  boolean isSmall;
+  static final float SMALL_UFO_SCALE = 1;
+  static final float UFO_SCALE = 1;
 
-	/**
-	 * @param scale
-	 * @param id
-	 * @param tex
-	 */
-	public EntityUFO(float scale, int id, Texture tex) {
-		super(scale, tex);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * @param scale
+   * @param isSmall
+   */
+  public EntityUFO(boolean isSmall) {
+    super(isSmall ? SMALL_UFO_SCALE : UFO_SCALE, isSmall ? Asteroids.ufoSmallTex : Asteroids.ufoTex);
 
-	@Override
-	void tick(float delta) {
-		// TODO Auto-generated method stub
+    this.isSmall = isSmall;
+  }
 
-	}
+  @Override
+  void tick(float delta) {
+    x += vx * delta;
+    y += vy * delta;
+    
+    
+  }
+  
+  void shootAtPlayer(EntityPlayer plr) {
+    
+  }
 
-	@Override
-	void setHitbox() {
-		// TODO Auto-generated method stub
+  @Override
+  void setHitbox() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	Object getHitbox() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  Polygon getHitbox() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	void notifyHit(Entity e) {
-		// TODO Auto-generated method stub
+  @Override
+  void notifyHit(Entity e) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	void die() {
-		// TODO Auto-generated method stub
+  @Override
+  void die() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 }

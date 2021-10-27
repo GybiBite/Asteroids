@@ -30,6 +30,12 @@ Sure! Also, I would love feedback on it, however, at the time of writing this, t
 
 If you simply found a weird bug or something does not seem quite right, make a ticket in the [Issues](https://github.com/GybiBite/Asteroids/issues) tab. If you have other feedback or suggestions for the project, you can contact me via email at [ddemarco03@outlook.com](mailto:ddemarco03@outlook.com). I usually respond quite fast, and always open to suggestions.
 
+## Credits:
+
+* Braden Butler [(@awfu.ly.quiet)](https://www.instagram.com/awfu.ly.quiet/), Sprite design
+* Gabrielle Gilford, Sprite design
+* Alien Bird [(@EterniumDev)](https://github.com/EterniumDev), Code cleanup
+
 ## License
 
 MIT License

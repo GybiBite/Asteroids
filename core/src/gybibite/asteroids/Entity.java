@@ -2,196 +2,202 @@ package gybibite.asteroids;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
 
-interface Enemy{}
+interface Enemy { }
 
 public abstract class Entity {
-	
-	/** Set to true if entity was hit. */
-	protected boolean dying;
-	protected long deathTimer;
-	protected Texture tex;
-	
-	/*
-	 * FIXME: Every call to the size-getting methods use a scuffed fix for the
-	 * screen scaling that multiples every "size" by a fixed constant which
-	 * represents the difference between old and new screen size.
-	 */
-	protected Sprite sprite;
-	/** Clones for screen wrapping. */
-	protected Sprite[] clones = new Sprite[8];
-	/** Death animation frames for entity */
-	protected Animation<TextureRegion> deathAnim;
-	protected TextureAtlas atlas;
-	/** Polygon object for controlling the hitbox. */
-	protected Polygon hitbox;
-	/** Constants for window size. */
-	protected static final int S_WIDTH = Asteroids.S_WIDTH;
-	protected static final int S_HEIGHT = Asteroids.S_HEIGHT;
-	/* Positional variables */
-	float x;
-	float y;
-	float vx;
-	float vy;
-	float rot;
-	/** Hitbox definition */
-	float[] hb;
 
-	/**
-	 * The primary constructor for creating a new entity
-	 * 
-	 * @param scale How to scale the texture for the entity
-	 * @param id    What ID to set (0: Player | 1: Bullet | 2: Asteroid | 3: UFO)
-	 * @param tex   The texture to use (assets directory)
-	 */
-	Entity(float scale, Texture tex) {
+  /** Placeholder variable for the amount of clone per entity. */
+  public static final int CLONE_COUNT = 8;
 
-		this.tex = tex;
-		sprite = new Sprite(tex);
+  /** The main sprite object that represents this entity on screen.<p>
+   *
+   * FIXME: Every call to the size-getting methods use a scuffed fix for the
+   * screen scaling that multiples every "size" by a fixed constant which
+   * represents the difference between old and new screen size.
+   */
+  final Sprite sprite;
+  /** Clones for screen wrapping. */
+  final Sprite[] clones = new Sprite[CLONE_COUNT];
+  /** Polygon object for controlling the hitbox. */
+  Polygon hitbox;
+  /* Positional variables */
+  float x;
+  float y;
+  float vx;
+  float vy;
+  float rot;
+  /** Hitbox definition. */
+  float[] hb;
 
-		// Set all "clones" to the same texture
-		for (int i = 0; i < 8; i++) {
-			clones[i] = new Sprite(tex);
-		}
+  /** The primary constructor for creating a new entity.
+   *
+   * @param scale How to scale the texture for the entity
+   * @param texture The texture to use (assets directory)
+   */
+  Entity(final float scale, final Texture texture) {
 
-		// Apply scaling
-		sprite.setScale(scale);
-		for (Sprite s : clones) {
-			s.setScale(scale);
-		}
+    sprite = new Sprite(texture);
 
-		// Keep track of this entity in the entity list
-		GameUI.addEntity(this);
-	}
+    // Set all "clones" to the same texture
+    for (int i = 0; i < clones.length; i++) {
+      clones[i] = new Sprite(texture);
+    }
 
-	/**
-	 * Returns the center of the sprite's X position, since libGDX won't draw the
-	 * sprite centered on the coordinate
-	 * 
-	 * @param x X Position
-	 */
-	float centerX(float x) {
-		return x - sprite.getWidth() / 2;
-	}
+    // Apply scaling
+    sprite.setScale(scale);
+    for (Sprite s : clones) {
+      s.setScale(scale);
+    }
 
-	/**
-	 * Returns the center of the sprite's Y position, since libGDX won't draw the
-	 * sprite centered on the coordinate
-	 * 
-	 * @param y Y Position
-	 */
-	float centerY(float y) {
-		return y - sprite.getHeight() / 2;
-	}
+    // Keep track of this entity in the entity list
+    GameUI.addEntity(this);
+  }
 
-	/** Get the entity's velocity, in array format */
-	float[] getV() {
-		return new float[] { vx, vy };
-	}
+  /** Returns properly centered X position of the entity, for LibGDX.
+  *
+  * @param xPos Uncorrected X position
+  * @return Corrected X position
+  */
+  float centerX(final float xPos) {
+    return x - sprite.getWidth() / 2;
+  }
 
-	/** Returns the X position of the sprite */
-	float getX() {
-		return x;
-	}
+  /** Returns properly centered Y position of the entity, for LibGDX.
+   *
+   * @param yPos Uncorrected Y position
+   * @return Corrected Y position
+   */
+  float centerY(final float yPos) {
+    return yPos - sprite.getHeight() / 2;
+  }
 
-	/** Returns the Y position of the sprite */
-	float getY() {
-		return y;
-	}
+  /** Returns the velocity of the entity, in a float array */
+  float[] getV() {
+    return new float[] {vx, vy};
+  }
 
-	/** Returns the rotation angle of the sprite */
-	float getRot() {
-		return rot;
-	}
+  /** Returns the X position of the entity */
+  float getX() {
+    return x;
+  }
 
-	/** Positions "clones" to emulate screen texture wrapping */
-	void posClones() {
-		clones[0].setPosition(centerX(x) - S_WIDTH, centerY(y) - S_HEIGHT); // Top right
-		clones[1].setPosition(centerX(x), centerY(y) - S_HEIGHT); // Top middle
-		clones[2].setPosition(centerX(x) + S_WIDTH, centerY(y) - S_HEIGHT); // Top left
-		clones[3].setPosition(centerX(x) - S_WIDTH, centerY(y)); // Middle right
-		clones[4].setPosition(centerX(x) + S_WIDTH, centerY(y)); // Middle left
-		clones[5].setPosition(centerX(x) - S_WIDTH, centerY(y) + S_HEIGHT); // Bottom right
-		clones[6].setPosition(centerX(x), centerY(y) + S_HEIGHT); // Bottom middle
-		clones[7].setPosition(centerX(x) + S_WIDTH, centerY(y) + S_HEIGHT); // Bottom left
-	}
+  /** Returns the Y position of the entity */
+  float getY() {
+    return y;
+  }
 
-	/**
-	 * Just tells the sprite batch to draw the ship
-	 * 
-	 * @param batch The sprite batch to be passed to the draw command
-	 */
-	public void render(SpriteBatch batch) {
-		// Set sprite location
-		sprite.setPosition(centerX(x), centerY(y));
-		posClones();
-		// Tell the sprite batch to draw
-		sprite.setRotation(rot);
-		sprite.draw(batch);
-		for (Sprite s : clones) {
-			s.setRotation(rot);
-			s.draw(batch);
-		}
-	}
+  /** Returns the rotation angle of the entity */
+  float getRot() {
+    return rot;
+  }
 
-	/** Tells the game UI to draw the hitbox to the screen */
-	void drawHB() {
-		GameUI.drawPoly(hitbox.getTransformedVertices());
-	}
+  /** Positions "clones" to emulate screen texture wrapping. */
+  void posClones() {
+    clones[0].setPosition(
+        centerX(x) - Asteroids.S_WIDTH,
+        centerY(y) - Asteroids.S_HEIGHT); // Top right
+    clones[1].setPosition(
+        centerX(x),
+        centerY(y) - Asteroids.S_HEIGHT); // Top middle
+    clones[2].setPosition(
+        centerX(x) + Asteroids.S_WIDTH,
+        centerY(y) - Asteroids.S_HEIGHT); // Top left
+    clones[3].setPosition(
+        centerX(x) - Asteroids.S_WIDTH,
+        centerY(y));                      // Middle right
+    clones[4].setPosition(
+        centerX(x) + Asteroids.S_WIDTH,
+        centerY(y));                      // Middle left
+    clones[5].setPosition(
+        centerX(x) - Asteroids.S_WIDTH,
+        centerY(y) + Asteroids.S_HEIGHT); // Bottom right
+    clones[6].setPosition(
+        centerX(x),
+        centerY(y) + Asteroids.S_HEIGHT); // Bottom middle
+    clones[7].setPosition(
+        centerX(x) + Asteroids.S_WIDTH,
+        centerY(y) + Asteroids.S_HEIGHT); // Bottom left
+  }
 
-	/**
-	 * Disposes of any "Disposable" objects
-	 * 
-	 * @see com.badlogic.gdx.utils#Disposable
-	 */
-	public void dispose() {
-//		tex.dispose();
-	}
+  /** Tell the {@link SpriteBatch} to render the entity.
+   *
+   * @param batch The sprite batch to be passed to the draw command
+   */
+  public void render(final SpriteBatch batch) {
+    // Set sprite location
+    sprite.setPosition(centerX(x), centerY(y));
+    posClones();
+    // Tell the sprite batch to draw
+    sprite.setRotation(rot);
+    sprite.draw(batch);
+    for (Sprite s : clones) {
+      s.setRotation(rot);
+      s.draw(batch);
+    }
+  }
 
-	/** Removes the entity when necessary */
-	public void delete() {
-		GameUI.destroyEntity(this);
-		dispose();
-	}
+  /** Tells the game UI to draw the hitbox to the screen. */
+  void drawHB() {
+    GameUI.drawPoly(hitbox.getTransformedVertices());
+  }
 
-	/** Defines how the entity interacts with the world every game cycle */
-	abstract void tick(float delta);
+  /** Disposes of any "Disposable" objects.
+   *
+   * @see com.badlogic.gdx.utils#Disposable
+   */
+  public void dispose() {
+  }
 
-	/** Sets the hitbox vertices */
-	abstract void setHitbox();
+  /** Removes the entity when necessary. */
+  public void delete() {
+    GameUI.destroyEntity(this);
+    dispose();
+  }
 
-	/** Gets the hitbox object of the entity */
-	abstract Object getHitbox();
+  /** Defines how the entity interacts with the world every game cycle.
+   *
+   * @param delta The time difference between the last tick and the current tick
+   */
+  abstract void tick(float delta);
 
-	/** Called if the entity was hit by another entity */
-	abstract void notifyHit(Entity e);
+  /** Sets the hitbox vertices. */
+  abstract void setHitbox();
 
-	/**
-	 * Called when the entity dies (for playing animations, sounds, triggering
-	 * event, etc.)
-	 */
-	abstract void die();
+  /** Gets the hitbox object of the entity.
+   *
+   * @return Hitbox object (Polygon or Circle)
+   */
+  abstract Object getHitbox();
 
-	/** Some debug stuff */
-	@Override
-	public String toString() {
-		return "-----------------" + "\n" +
-				"Entity: " + this.getClass().getSimpleName() + " at " + GameUI.entities.indexOf(this, true) + "\n" +
-				"Velocity: (" + vx + ", " + vy + ")" + "\n" +
-				"Position: (" + x + ", " + y + ")";
-	}
+  /** Called if the entity was hit by another entity.
+   *
+   * @param e The entity type that the current entity was hit by
+   */
+  abstract void notifyHit(Entity e);
 
-	/**
-	 * Allows the entity to register key events<br>
-	 * Intended to be overridden by {@link EntityPlayer}
-	 */
-	public void checkInput(boolean[] buttons) {
-		Gdx.app.log("INPUT", "Input can only be checked for a playable entity");
-	}
+  /** Used for death effects before removing the entity. */
+  abstract void die();
+
+  /** Some debug stuff. */
+  @Override
+  public String toString() {
+    return "-----------------" + "\n" +
+        "Entity: " + this.getClass().getSimpleName() + " at "
+        + GameUI.entities.indexOf(this, true) + "\n"
+        + "Velocity: (" + vx + ", " + vy + ")" + "\n"
+        + "Position: (" + x + ", " + y + ")";
+  }
+
+  /** Allows the entity to register key events.<br>
+   * Intended to be overridden by {@link EntityPlayer}
+   *
+   * @param buttons Array of flags for which buttons are used
+   */
+  public void checkInput(final boolean[] buttons) {
+    Gdx.app.log("INPUT", "Input can only be checked for a playable entity");
+  }
 }

@@ -1,6 +1,6 @@
 # Java Asteroids
 
-[![](https://img.shields.io/tokei/lines/github/GybiBite/Asteroids?style=flat-square)](https://github.com/GybiBite/Asteroids/tree/main/core/src/gybibite/asteroids) [ ![](https://img.shields.io/github/license/GybiBite/Asteroids?style=flat-square)](https://unlicense.org/) [ ![](https://img.shields.io/github/downloads/GybiBite/Asteroids/total?style=flat-square)](https://github.com/GybiBite/Asteroids/releases) [ ![](https://img.shields.io/github/last-commit/gybibite/asteroids?style=flat-square)](https://github.com/GybiBite/Asteroids/commits/main)
+[![](https://img.shields.io/tokei/lines/github/GybiBite/Asteroids?style=flat-square)](https://github.com/GybiBite/Asteroids/tree/main/core/src/gybibite/asteroids) [ ![](https://img.shields.io/github/license/GybiBite/Asteroids?style=flat-square)](https://choosealicense.com/licenses/mit/) [ ![](https://img.shields.io/github/downloads/GybiBite/Asteroids/total?style=flat-square)](https://github.com/GybiBite/Asteroids/releases) [ ![](https://img.shields.io/github/last-commit/gybibite/asteroids?style=flat-square)](https://github.com/GybiBite/Asteroids/commits/main)
 
 ## What is this project about?
 

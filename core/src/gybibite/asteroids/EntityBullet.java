@@ -15,6 +15,8 @@ public final class EntityBullet extends Entity {
   static final float BULLET_TIME = 800;
   /** How long the bullet has been alive for. */
   private long age;
+  /** Whether or not the bullet was fired by a ship */
+  private boolean friendly;
 
   /**
    * Create a new EntityBullet object<br>
@@ -23,14 +25,12 @@ public final class EntityBullet extends Entity {
    * @param scale The scale of the entity (size)
    * @param pl The entity that shot the bullet
    */
-  public EntityBullet(final float scale, final Entity pl) {
-    super(scale, Asteroids.bulletTex);
-    this.originX = pl.getX();
-    this.originY = pl.getY();
-    this.rot = pl.getRot();
-
-    x = originX;
-    y = originY;
+  public EntityBullet(final float x, final float y, final float rot, final boolean friendly) {
+    super(2.5f, Asteroids.bulletTex);
+    this.originX = this.x = x;
+    this.originY = this.y = y;
+    this.rot = rot;
+    this.friendly = friendly;
 
     vy = (float) (Math.cos(Math.toRadians(rot))) * BULLET_SPEED;
     vx = -(float) (Math.sin(Math.toRadians(rot))) * BULLET_SPEED;
@@ -68,7 +68,7 @@ public final class EntityBullet extends Entity {
 
   @Override
   void notifyHit(final Entity e) {
-    if (e instanceof EntityAsteroid) {
+    if (e instanceof Enemy) {
       die();
     }
   }
@@ -83,6 +83,10 @@ public final class EntityBullet extends Entity {
         };
 
     hitbox = new Polygon(hb);
+  }
+  
+  public boolean isFriendly() {
+    return friendly;
   }
 
   @Override

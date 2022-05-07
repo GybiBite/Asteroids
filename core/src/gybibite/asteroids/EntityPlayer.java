@@ -105,7 +105,8 @@ public final class EntityPlayer extends Entity {
     if (firePressed) {
       if(bulletsRemaining > 0) {
         Asteroids.laserSfx.play((float) GameUI.volume / 6);
-        new EntityBullet(2.5f, this);
+        new EntityBullet(x, y, rot, true);
+//        new EntityUFO(true);
         bulletsRemaining--;
       }
     }
@@ -155,11 +156,16 @@ public final class EntityPlayer extends Entity {
   @Override
   void notifyHit(final Entity e) {
     if (TimeUtils.timeSinceMillis(invulTimer) >= INVUL_TIME) {
-      if (e instanceof EntityAsteroid) {
-        die();
+      if (e instanceof EntityBullet) {
+        if (!((EntityBullet) e).isFriendly()) {
+          die();
+        }
       }
+    } else {
+      die();
     }
   }
+
   
   @Override
   void setHitbox() {

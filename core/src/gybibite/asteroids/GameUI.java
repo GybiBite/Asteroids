@@ -35,6 +35,7 @@ public final class GameUI extends ScreenAdapter {
 
   private final int NEXTLVL_DELAY = 3000;
   private final int STAR_COUNT = 300;
+  private final static int NEW_LIFE_SCORE = 2000;
   long nextLvlTimer = -1;
   private int level = 0;
   static int score;
@@ -250,8 +251,8 @@ public final class GameUI extends ScreenAdapter {
   }
   
   public static void addScore(int score) {
-    for (int i = GameUI.score; i <= GameUI.score + score; i++) {
-      if (GameUI.score != 0 && i % 200 == 0) {
+    for (int i = GameUI.score + 1; i <= GameUI.score + score; i++) {
+      if (GameUI.score != 0 && i % NEW_LIFE_SCORE == 0) {
         lives += 1;
         Asteroids.lifeSfx.play((float) GameUI.volume / 6);
       }

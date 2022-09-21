@@ -68,8 +68,13 @@ public final class EntityBullet extends Entity {
 
   @Override
   void notifyHit(final Entity e) {
-    if (e instanceof Enemy) {
+    if (this.isFriendly() && e instanceof Enemy) {
       die();
+      System.out.println("friendly bullet hit enemy");
+    }
+    else if (!this.isFriendly() && e instanceof EntityPlayer){
+      die();
+      System.out.println("non-friendly bullet hit player");
     }
   }
 

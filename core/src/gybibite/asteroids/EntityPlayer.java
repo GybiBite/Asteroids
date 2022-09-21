@@ -160,9 +160,9 @@ public final class EntityPlayer extends Entity {
         if (!((EntityBullet) e).isFriendly()) {
           die();
         }
+      } else {
+        die();
       }
-    } else {
-      die();
     }
   }
 

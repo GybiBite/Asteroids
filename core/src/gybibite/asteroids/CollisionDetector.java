@@ -61,6 +61,8 @@ public final class CollisionDetector {
     }
   }
 
+  
+  // i stole this from stackoverflow lmao
   public static boolean overlaps(Polygon polygon, Circle circle) {
     float[] vertices = polygon.getTransformedVertices();
     center.set(circle.x, circle.y);

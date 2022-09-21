@@ -9,7 +9,7 @@ public final class EntityUFO extends Entity implements Enemy {
   boolean isSmall;
   static final float SMALL_UFO_SCALE = 1;
   static final float UFO_SCALE = 2.25f;
-  static final float SHOOT_DELAY = 500;
+  static final float SHOOT_DELAY = 1000;
   long shootTimer;
   static Array<Entity> entities = GameUI.entities;
 
@@ -48,9 +48,11 @@ public final class EntityUFO extends Entity implements Enemy {
               angle += 180;
             }
             new EntityBullet(x, y, angle, false);
+            shootTimer = TimeUtils.millis();
+            System.out.println("bullet shot i think idk");
           }
         }
-        shootTimer = TimeUtils.millis();
+        
       }
       else {
         new EntityBullet(x, y, (float) Math.floor(Math.random() * 360), false);
@@ -62,12 +64,16 @@ public final class EntityUFO extends Entity implements Enemy {
 
   @Override
   void setHitbox() {
-    hb = new float[] {
-        0, sprite.getHeight() + 2,
-        sprite.getWidth() + 1, 0,
-        0, -sprite.getHeight() / 1.3f,
-        -sprite.getWidth() - 1, 0
-        };
+    if(isSmall) {
+      
+    } else {
+      hb = new float[] {
+          0, sprite.getHeight() + 2,
+          sprite.getWidth() + 1, 0,
+          0, -sprite.getHeight() / 1.3f,
+          -sprite.getWidth() - 1, 0
+      };
+    }
 
     hitbox = new Polygon(hb);
     

@@ -122,7 +122,7 @@ public final class Button {
 
   /**
    * Checks if the mouse is hovering over the button to highlight it, and subsequently checks for a
-   * mouse click.
+   * mouse click.</p>
    *
    * FIXME: Buttons don't support screen resizing
    */

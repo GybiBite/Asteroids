@@ -41,6 +41,7 @@ public final class GameUI extends ScreenAdapter {
   static int score;
   private boolean enemiesStillAlive, playerStillAlive;
   private int[] tempAstSpawnPos;
+  private double ufoSpawnTimer;
   static int volume = 3;
   
   static boolean useArrowKeys;
@@ -121,14 +122,16 @@ public final class GameUI extends ScreenAdapter {
   public void tick(float delta) {
     killKeyPressed = Gdx.input.isKeyJustPressed(Keys.F) && Asteroids.debug;
     enemiesStillAlive = playerStillAlive = false;
+    
+    if(ufoSpawnTimer == 0) ufoSpawnTimer = (10 + (Math.random() * 20)) * 1000;
     /*
      * Because of an apparent bug with iterators, this has to be a classic "for loop" and not
-     * "Object o : Array"
+     * "Object o : Array" and it looks ugly as shit
      * 
      * PS: iterators are awful :)
      */
     for (int i = 0; i < entities.size; i++) {
-      // If current entity check is on a player, check user input
+      // If current entity tick is on a player, check user input
       if (entities.toArray()[i] instanceof EntityPlayer) {
         if (playerOne == null) {
           playerOne = (EntityPlayer) entities.toArray()[i];

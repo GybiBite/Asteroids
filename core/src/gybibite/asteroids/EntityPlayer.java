@@ -106,7 +106,6 @@ public final class EntityPlayer extends Entity {
       if(bulletsRemaining > 0) {
         Asteroids.laserSfx.play((float) GameUI.volume / 6);
         new EntityBullet(x, y, rot, true);
-//        new EntityUFO(true);
         bulletsRemaining--;
       }
     }

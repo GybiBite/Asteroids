@@ -75,7 +75,7 @@ public final class EntityAsteroid extends Entity implements Enemy {
 
   @Override
   void notifyHit(final Entity e) {
-    if (e instanceof EntityBullet) {
+    if (e instanceof EntityBullet && ((EntityBullet) e).isFriendly()) {
       GameUI.addScore(25 * (3 - size));
       die();
     } else if (e instanceof EntityPlayer && !((EntityPlayer) e).isInvul) {

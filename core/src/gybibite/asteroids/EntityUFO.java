@@ -1,10 +1,11 @@
 package gybibite.asteroids;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public final class EntityUFO extends Entity implements Enemy {
+public final class EntityUFO extends Entity/* implements Enemy */{
   
   boolean isSmall;
   static final float SMALL_UFO_SCALE = 1.5f;
@@ -13,6 +14,11 @@ public final class EntityUFO extends Entity implements Enemy {
   static final float ZIG_DELAY = 1000;
   long shootTimer, zigZagTimer;
   static Array<Entity> entities = GameUI.entities;
+  
+  final ParticleEmitter deathPieces;
+
+  /** Amount of particles to spawn upon death. */
+  static final int DEATH_PARTICLE_COUNT = 16;
 
   /**
    * @param scale
@@ -23,7 +29,7 @@ public final class EntityUFO extends Entity implements Enemy {
 
     this.isSmall = isSmall;
     
-    x = 300;
+    x = 0;
     y = (float) Math.random() * Asteroids.S_HEIGHT;
     
     if(isSmall) {
@@ -34,6 +40,9 @@ public final class EntityUFO extends Entity implements Enemy {
       vy = 40;
     }
     setHitbox();
+    
+    this.deathPieces =
+        new ParticleEmitter(3f, new Color(1f, 1f, 1f, 1f), 359f, 7f, 1000f, 100f);
   }
 
   @Override
@@ -52,12 +61,14 @@ public final class EntityUFO extends Entity implements Enemy {
               angle += 180;
             }
             new EntityBullet(x, y, angle, false);
+            Asteroids.laserSfx.play((float) GameUI.volume / 6);
             shootTimer = TimeUtils.millis();
           }
         }
 
       } else {
         new EntityBullet(x, y, (float) Math.floor(Math.random() * 360), false);
+        Asteroids.laserSfx.play((float) GameUI.volume / 6);
         shootTimer = TimeUtils.millis();
       }
     }
@@ -123,13 +134,20 @@ public final class EntityUFO extends Entity implements Enemy {
 
   @Override
   void notifyHit(Entity e) {
-    // TODO Auto-generated method stub
-
+    if (e instanceof EntityBullet && ((EntityBullet) e).isFriendly()) {
+      GameUI.addScore(isSmall ? 150 : 100);
+      die();
+    } else if (e instanceof EntityPlayer && !((EntityPlayer) e).isInvul) {
+      die();
+    }
   }
 
   @Override
   void die() {
-    // TODO Auto-generated method stub
+    for (int i = 0; i < 10/* amount of death particles to emit */; i++) {
+      deathPieces.emit(x, y, 0, 0.2f);
+    }
 
+    delete();
   }
 }

@@ -35,17 +35,19 @@ public final class GameUI extends ScreenAdapter {
 
   private final int NEXTLVL_DELAY = 3000;
   private final int STAR_COUNT = 300;
-  private final static int NEW_LIFE_SCORE = 2000;
+  private final static int NEW_LIFE_SCORE = 4000;
+  private static double ufoSpawnDelay = 15000;
   long nextLvlTimer = -1;
   private int level = 0;
   static int score;
   private boolean enemiesStillAlive, playerStillAlive;
   private int[] tempAstSpawnPos;
-  private double ufoSpawnTimer;
+  private long ufoSpawnTimer;
   static int volume = 3;
   
   static boolean useArrowKeys;
   static boolean killKeyPressed;
+  static boolean isUfoAlive;
 
   Random rand = new Random();
   static CollisionDetector collide = new CollisionDetector(entities);
@@ -71,6 +73,7 @@ public final class GameUI extends ScreenAdapter {
     livesDisp = new Sprite[10];
     lives = 3;
     score = 0;
+    ufoSpawnTimer = TimeUtils.millis();
     batch = new SpriteBatch();
     s = new ShapeRenderer();
     new EntityPlayer(1.875f, 1); // Creates a new player (ship), while passing the sprite batch so it can render
@@ -121,9 +124,8 @@ public final class GameUI extends ScreenAdapter {
 
   public void tick(float delta) {
     killKeyPressed = Gdx.input.isKeyJustPressed(Keys.F) && Asteroids.debug;
-    enemiesStillAlive = playerStillAlive = false;
+    enemiesStillAlive = playerStillAlive = isUfoAlive = false;
     
-    if(ufoSpawnTimer == 0) ufoSpawnTimer = (10 + (Math.random() * 20)) * 1000;
     /*
      * Because of an apparent bug with iterators, this has to be a classic "for loop" and not
      * "Object o : Array" and it looks ugly as shit
@@ -151,6 +153,10 @@ public final class GameUI extends ScreenAdapter {
       if (entities.toArray()[i] instanceof Enemy) {
         enemiesStillAlive = true;
       }
+      
+      if (entities.toArray()[i] instanceof EntityUFO) {
+        isUfoAlive = true;
+      }
     }
 
     for (Particle p : particles) {
@@ -161,7 +167,7 @@ public final class GameUI extends ScreenAdapter {
       collide.checkForCollisions();
       
       if(killKeyPressed) {
-        e.delete();
+        entities.clear();
       }
     }
 
@@ -192,6 +198,18 @@ public final class GameUI extends ScreenAdapter {
         }
       }
     }
+    
+    if(TimeUtils.timeSinceMillis(ufoSpawnTimer) > ufoSpawnDelay) {
+      if(isUfoAlive) {
+        ufoSpawnTimer = TimeUtils.millis();
+      }
+      else {
+      ufoSpawnDelay = (10 + (Math.random() * 20)) * 1000;
+      ufoSpawnTimer = TimeUtils.millis();
+      
+      new EntityUFO((2/level) < Math.random());
+      }
+    }
   }
 
   @Override
@@ -202,7 +220,7 @@ public final class GameUI extends ScreenAdapter {
 
   @Override
   public void hide() {
-//    dispose();
+    dispose();
   }
 
   @Override

@@ -39,6 +39,7 @@ public final class GameUI extends ScreenAdapter {
   private static double ufoSpawnDelay = 15000;
   long nextLvlTimer = -1;
   private int level = 0;
+  private boolean gameHasEnded = false;
   static int score;
   private boolean enemiesStillAlive, playerStillAlive;
   private int[] tempAstSpawnPos;
@@ -55,7 +56,8 @@ public final class GameUI extends ScreenAdapter {
   
   ParticleEmitter stars = new ParticleEmitter(1, new Color(255, 255, 255, 1), 360, 400, Long.MAX_VALUE, 0);
   
-  TypewriterTextAnim levelText = new TypewriterTextAnim(Asteroids.S_WIDTH / 2, Asteroids.S_HEIGHT - 50, 0.4f, "IfYouSeeThisTheresABug", 50f, 3000f);
+  private static final TypewriterTextAnim LEVEL_TEXT = new TypewriterTextAnim(Asteroids.S_WIDTH / 2, Asteroids.S_HEIGHT - 50, 0.4f, "IfYouSeeThisTheresABug", 50f, 3000f);
+  private static final TypewriterTextAnim GAME_OVER = new TypewriterTextAnim(Asteroids.S_WIDTH / 2, Asteroids.S_HEIGHT / 2, 0.6f, "Game Over", 100f, Float.MAX_VALUE);
 
   /** Amount of remaining lives (or "respawns") for the player */
   public static int lives = 0;
@@ -71,8 +73,10 @@ public final class GameUI extends ScreenAdapter {
   @Override
   public void show() {
     livesDisp = new Sprite[10];
+    gameHasEnded = false;
     lives = 3;
     score = 0;
+    level = 0;
     ufoSpawnTimer = TimeUtils.millis();
     batch = new SpriteBatch();
     s = new ShapeRenderer();
@@ -101,13 +105,24 @@ public final class GameUI extends ScreenAdapter {
     }
 
     font.draw(batch, ("" + score), 30, Asteroids.S_HEIGHT - 30, 2, Align.left, false);
+    
+    if(gameHasEnded) {
+      font.draw(batch, ("Score: " + score), Asteroids.S_WIDTH / 2, Asteroids.S_HEIGHT / 2 - 50, 0, Align.center, false);
+      
+      if(Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
+        dispose();
+        g.switchScreen(0);
+        GAME_OVER.reset();
+      }
+    }
 
     for (int i = 0; i < Math.min(10, lives); i++) {
       livesDisp[i].draw(batch);
     }
     batch.end(); // Ends the sprite batch. Required for libGDX
 
-    levelText.render(batch);
+    LEVEL_TEXT.render(batch);
+    GAME_OVER.render(batch);
     
     if (Asteroids.isDebug()) {
       for (Entity e : entities) {
@@ -171,7 +186,7 @@ public final class GameUI extends ScreenAdapter {
       }
     }
 
-    if (!playerStillAlive) {
+    if (!playerStillAlive && !gameHasEnded) {
       if (nextLvlTimer == -1) {
         nextLvlTimer = TimeUtils.millis();
       } else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
@@ -179,17 +194,24 @@ public final class GameUI extends ScreenAdapter {
         if (lives >= 0) {
           new EntityPlayer(1.875f, 1);
         } else {
-          level = 0;
-          dispose();
-          g.switchScreen(0);
+          System.out.println("reached death");
+          for(Entity e : entities) {
+            e.die();
+          }
+          gameHasEnded = true;
+          GAME_OVER.startTyping();
+//          dispose();
+//          g.switchScreen(0);
+          
+          
         }
       }
-    } else if (!enemiesStillAlive) {
+    } else if (!enemiesStillAlive && !gameHasEnded) {
       if (nextLvlTimer == -1) {
         level++;
         nextLvlTimer = TimeUtils.millis();
-        levelText.setLabel("Level " + level);
-        levelText.startTyping();
+        LEVEL_TEXT.setLabel("Level " + level);
+        LEVEL_TEXT.startTyping();
       } else if (TimeUtils.timeSinceMillis(nextLvlTimer) >= NEXTLVL_DELAY) {
         nextLvlTimer = -1;
         for(int i = 0; i < level + 2; i++) {
@@ -204,7 +226,7 @@ public final class GameUI extends ScreenAdapter {
         ufoSpawnTimer = TimeUtils.millis();
       }
       else {
-      ufoSpawnDelay = (10 + (Math.random() * 20)) * 1000;
+      ufoSpawnDelay = (20 + (Math.random() * 30)) * 1000;
       ufoSpawnTimer = TimeUtils.millis();
       
       new EntityUFO((2/level) < Math.random());

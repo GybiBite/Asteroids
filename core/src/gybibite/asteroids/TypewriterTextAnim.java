@@ -65,6 +65,11 @@ public class TypewriterTextAnim {
     this.label = label;
   }
 
+  public void reset() {
+    temp = "";
+    untyping = typing = false;
+  }
+  
   public void startTyping() {
     typing = true;
   }

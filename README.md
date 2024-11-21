@@ -33,7 +33,6 @@ If you simply found a weird bug or something does not seem quite right, make a t
 ## Credits:
 
 * Braden Butler [(@awfu.ly.quiet)](https://www.instagram.com/awfu.ly.quiet/), Sprite design
-* Gabrielle Gilford, Sprite design
 * Alien Bird [(@EterniumDev)](https://github.com/EterniumDev), Code cleanup
 
 ## License
